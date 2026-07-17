@@ -1,0 +1,15 @@
+================================================================
+BASELINE: Flex-MoE-Surv (plain-PyTorch, missing-bank + sparse-MoE) — KIRC 5-fold
+================================================================
+
+TABLE 1 (0%)
+  scenario         C-index | IBS(raw->recal) | calMAD(raw->recal)
+  genes-miss(P)   0.7134  | 0.1620->0.1410 | 0.1197->0.1094
+  image-miss(G)   0.6879  | 0.1521->0.1373 | 0.1172->0.1143
+  both(C)         0.7228  | 0.1664->0.1707 | 0.1297->0.1255
+
+TABLE 2 (60% avg)
+  scenario         C-index | IBS(raw->recal) | calMAD(raw->recal)
+  genes-miss(P)   0.6933  | 0.1688->0.1544 | 0.1219->0.1044
+  image-miss(G)   0.6382  | 0.1807->0.1617 | 0.1485->0.1171
+  both(C)         0.7233  | 0.1605->0.1533 | 0.1219->0.1140

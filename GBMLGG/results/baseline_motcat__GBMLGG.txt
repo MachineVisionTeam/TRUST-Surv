@@ -1,0 +1,5 @@
+============================================================
+MOTCat (complete-data reference) — GBMLGG 5-fold, 0% missing
+OT co-attention needs BOTH modalities -> complete(C) scenario only
+============================================================
+  both(C)  C-index=0.8088+/-0.0335  IBS=0.1331

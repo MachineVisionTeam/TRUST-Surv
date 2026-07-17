@@ -1,0 +1,15 @@
+================================================================
+BASELINE: ShaSpec-Surv (CVPR'23, shared-specific, faithful) — GBMLGG 5-fold
+================================================================
+
+TABLE 1 (0%)
+  scenario         C-index | IBS
+  genes-miss(P)   0.7404  | 0.1816
+  image-miss(G)   0.7964  | 0.1428
+  both(C)         0.7973  | 0.1586
+
+TABLE 2 (60% avg)
+  scenario         C-index | IBS
+  genes-miss(P)   0.7740  | 0.1639
+  image-miss(G)   0.7875  | 0.1546
+  both(C)         0.8033  | 0.1483

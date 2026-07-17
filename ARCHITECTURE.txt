@@ -1,0 +1,113 @@
+================================================================================
+DCMD-Surv : Decomposed Cross-Modal Distillation for Imputation-Free
+            Missing-Modality Survival Prediction
+================================================================================
+(Paper 2, successor to HyPAL-Surv. Code: code/model_dcmd.py, code/run_dcmd_cal.py)
+
+--------------------------------------------------------------------------------
+0. ONE-LINE SUMMARY
+--------------------------------------------------------------------------------
+Two frozen foundation-model encoders (UNI2h image, BulkRNABert gene) feed a
+lightweight network that (a) decomposes each modality into a modality-GENERAL and
+implicit modality-specific part, (b) distills the gene-general knowledge into the
+image head at the FEATURE level, and (c) routes to modality-specific survival
+heads with learnable ABSENT tokens when a modality is missing. Imputation-free
+(no modality reconstruction). ~2.2M trainable params.
+
+--------------------------------------------------------------------------------
+1. INPUTS  (frozen, pre-extracted — not trained)
+--------------------------------------------------------------------------------
+  Image (histology WSI) : UNI2-h foundation model -> mean-pooled ROI bag
+                          x_img  in R^1536
+  Gene  (transcriptomics): BulkRNABert foundation model
+                          x_gene in R^256
+Both modalities are paired at training; missingness is applied as a MASK
+(img_present, gene_present in {0,1}); real single-modality cases can also be added.
+
+--------------------------------------------------------------------------------
+2. ADAPTERS  (project each modality to the fusion space, dim d = fusion_dim ~256)
+--------------------------------------------------------------------------------
+  z_img  = image_adapter(x_img)     # SELU-MLP, 1536 -> d
+  z_gene = gene_adapter(x_gene)     # SELU-MLP,  256 -> d
+(image_adapter, gene_adapter, and the HGBF fusion below are the GenoDistilCPKF /
+HGBF backbone reused from HyPAL-Surv Paper 1 — code/genodistil_cpkf.py.)
+
+--------------------------------------------------------------------------------
+3. DECOMPOSITION  (the novelty — general components for cross-modal distillation)
+--------------------------------------------------------------------------------
+  G_img  = gen_img(z_img)     # 2-layer MLP d->d->d  : image "general" component
+  G_gene = gen_gene(z_gene)   # 2-layer MLP d->d->d  : gene  "general" component
+G_gene is the modality-general (shared, gene-informed) representation; G_img is
+pulled toward it during training (see L_align), so the image head becomes
+gene-informed and can survive when genes are absent.
+
+--------------------------------------------------------------------------------
+4. ABSENT TOKENS  (imputation-free missing handling)
+--------------------------------------------------------------------------------
+  absent_image, absent_gene : learnable vectors in R^d
+  z_img_s  = img_present  * z_img  + (1-img_present)  * absent_image
+  z_gene_s = gene_present * z_gene + (1-gene_present) * absent_gene
+A missing modality's adapter output is REPLACED by its learned absent token
+(never reconstructed) -> truly imputation-free.
+
+--------------------------------------------------------------------------------
+5. FUSION  (HGBF = Hypercomplex-Gated Bilinear Fusion, from HyPAL-Surv)
+--------------------------------------------------------------------------------
+  fused = HGBF(z_img_s, z_gene_s)          # PHM-modulated bottleneck Kronecker
+                                           # bilinear interaction (parameter-light)
+  h_F   = cox_head_main(fused)             # FUSED hazard (both-present path)
+
+--------------------------------------------------------------------------------
+6. SURVIVAL HEADS  (3 outputs, one per scenario)
+--------------------------------------------------------------------------------
+  h_F : fused hazard        = cox_head_main(HGBF(z_img_s, z_gene_s))   [complete]
+  h_I : image-only hazard   = head_I(G_img)      # reads the gene-ALIGNED general
+  h_G : gene-only hazard    = head_G(z_gene)     # reads the FULL gene rep
+Each head is a Linear(d,64)-ReLU-Dropout-Linear(64,1) Cox risk head.
+
+--------------------------------------------------------------------------------
+7. MISSING-MODALITY ROUTING  (at inference)
+--------------------------------------------------------------------------------
+  both present  (C) -> h_F   (fused)
+  genes missing (P) -> h_I   (gene-anchored image head)     # image-only
+  image missing (G) -> h_G   (full gene head)               # gene-only
+
+--------------------------------------------------------------------------------
+8. TRAINING OBJECTIVE
+--------------------------------------------------------------------------------
+  L = Cox(h_F)                                   # fused survival
+    + lambda_aux * ( Cox(h_G) + Cox(h_I) )       # per-modality heads (aux)
+    + la * L_align                               # FEATURE-level cross-modal distill
+    + ld * L_rank                                # hazard-ranking distill (gene->image)
+
+  L_align = MSE( normalize(G_img), stopgrad(normalize(G_gene)) )   on both-present
+            -> pulls image-general toward gene-general (the ceiling-breaker;
+               MKD/LCKD-inspired, MICCAI'23/'25, ported to Cox survival)
+  L_rank  = ranking_distillation( h_I, stopgrad(h_G) )            on image-present
+  Cox     = Cox partial-likelihood (full-batch risk set)
+
+  Hyperparameters: la=1.0, ld=0.3, lambda_aux from backbone cfg, Adam,
+                   ~30 epochs, full-batch. NOTE: bidirectional (fused->gene)
+                   distillation was TESTED and REJECTED (negative transfer).
+
+--------------------------------------------------------------------------------
+9. CALIBRATION  (evaluation)
+--------------------------------------------------------------------------------
+  Per scenario: Breslow baseline cumulative hazard H0(t) from TRAIN risk of the
+  SAME head; S(t|x)=exp(-H0(t)exp(risk)); IBS via scikit-survival integrated
+  Brier score; optional temperature recalibration. (code/calibration_mm.py)
+  Metrics reported: C-index (discrimination) + IBS + cal-MAD (calibration).
+
+--------------------------------------------------------------------------------
+10. WHY IT WORKS / NOVELTY
+--------------------------------------------------------------------------------
+  (1) FIRST truly imputation-free histology-genomics survival method
+      (DisPro/ProSurv secretly recover the missing modality; we never do).
+  (2) Feature-DECOMPOSITION cross-modal distillation ported to Cox survival
+      (first) -> lifts the single-present-modality ceiling.
+  (3) CALIBRATION axis: best IBS of every compared method, both cohorts,
+      every scenario.
+  Plus: can EXPLOIT real single-modality cases that prior methods discard
+      (real-missing experiment).
+
+================================================================================

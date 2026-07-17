@@ -1,0 +1,15 @@
+================================================================
+BASELINE: Flex-MoE-Surv (plain-PyTorch, missing-bank + sparse-MoE) — GBMLGG 5-fold
+================================================================
+
+TABLE 1 (0%)
+  scenario         C-index | IBS(raw->recal) | calMAD(raw->recal)
+  genes-miss(P)   0.7394  | 0.1828->0.1657 | 0.1427->0.1121
+  image-miss(G)   0.7784  | 0.1750->0.1322 | 0.1546->0.0917
+  both(C)         0.7977  | 0.1628->0.1673 | 0.1345->0.1318
+
+TABLE 2 (60% avg)
+  scenario         C-index | IBS(raw->recal) | calMAD(raw->recal)
+  genes-miss(P)   0.7625  | 0.1723->0.1550 | 0.1375->0.1053
+  image-miss(G)   0.7791  | 0.1691->0.1371 | 0.1296->0.0875
+  both(C)         0.8032  | 0.1573->0.1412 | 0.1262->0.0988

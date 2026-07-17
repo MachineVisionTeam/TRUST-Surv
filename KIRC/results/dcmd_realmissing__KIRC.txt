@@ -1,0 +1,14 @@
+========================================================================
+DCMD-Surv REAL-MISSING experiment — KIRC 5-fold (test set unchanged)
+training augmented with 92 gene-only + 2 image-only real cases
+========================================================================
+
+TABLE 1 (0% simulated)   (C-index / IBS)   paired-only  ->  +real-missing
+  genes-miss(P)  C 0.7509->0.7577 (+0.0068) | IBS 0.1206->0.1201 (-0.0005)
+  image-miss(G)  C 0.7053->0.7113 (+0.0060) | IBS 0.1353->0.1328 (-0.0025)
+  both(C)        C 0.7637->0.7650 (+0.0013) | IBS 0.1275->0.1287 (+0.0012)
+
+TABLE 2 (60% simulated, avg)   (C-index / IBS)   paired-only  ->  +real-missing
+  genes-miss(P)  C 0.7370->0.7422 (+0.0052) | IBS 0.1221->0.1215 (-0.0006)
+  image-miss(G)  C 0.7052->0.7115 (+0.0063) | IBS 0.1354->0.1326 (-0.0027)
+  both(C)        C 0.7587->0.7603 (+0.0016) | IBS 0.1324->0.1331 (+0.0007)
