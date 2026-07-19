@@ -1,0 +1,15 @@
+================================================================
+BASELINE: HEALNet (NeurIPS'24, iterative fusion, None-missing) — LUAD 5-fold
+================================================================
+
+TABLE 1 (0%)
+  scenario         C-index | IBS
+  genes-miss(P)   0.5675  | 0.2031
+  image-miss(G)   0.5174  | 0.1912
+  both(C)         0.5525  | 0.1936
+
+TABLE 2 (60% avg)
+  scenario         C-index | IBS
+  genes-miss(P)   0.5551  | 0.2009
+  image-miss(G)   0.5438  | 0.1859
+  both(C)         0.5526  | 0.1930

@@ -1,0 +1,15 @@
+================================================================
+BASELINE: Flex-MoE-Surv (plain-PyTorch, missing-bank + sparse-MoE) — LUAD 5-fold
+================================================================
+
+TABLE 1 (0%)
+  scenario         C-index | IBS(raw->recal) | calMAD(raw->recal)
+  genes-miss(P)   0.5648  | 0.2275->0.2175 | 0.2000->0.1787
+  image-miss(G)   0.5750  | 0.2145->0.1828 | 0.1899->0.1229
+  both(C)         0.5763  | 0.2420->0.2462 | 0.2208->0.2223
+
+TABLE 2 (60% avg)
+  scenario         C-index | IBS(raw->recal) | calMAD(raw->recal)
+  genes-miss(P)   0.5440  | 0.2301->0.2147 | 0.2128->0.1863
+  image-miss(G)   0.5371  | 0.2258->0.2006 | 0.2014->0.1582
+  both(C)         0.5657  | 0.2174->0.2118 | 0.1854->0.1748

@@ -5,25 +5,52 @@
 # Feature-matched: UNI2h (image) + BulkRNABert (gene), pooled. DCMD-Surv* = ours.
 # Baselines: naive(zero/mean/KNN) + Flex-MoE(NeurIPS24) + MUSE(ICLR24) +
 #            MOTCat(ICCV23, complete-ref) + HEALNet(NeurIPS24) + ShaSpec(CVPR23).
+# Protocol: 5-fold CV; 0% and 60% missing (60% = mean over 5 blank-configs).
+# Cohorts: KIRC (n=333 tr), GBMLGG (n=473 tr), LUAD (n=357 tr).
 ################################################################################
 
-================================================================================================
-MASTER COMPARISON — DCMD-Surv vs baselines across cohorts (0% missing). C-index / IBS.
-================================================================================================
-  METHOD        | KIRC P        KIRC G        KIRC C        | GBMLGG P      GBMLGG G      GBMLGG C     
-  zero-fill     | 0.715/0.153 0.617/0.146 0.729/0.158 | 0.742/0.160 0.804/0.131 0.810/0.144
-  mean-imp      | 0.694/0.165 0.691/0.137 0.729/0.158 | 0.778/0.149 0.796/0.127 0.810/0.144
-  KNN-imp       | 0.715/0.162 0.660/0.158 0.729/0.158 | 0.805/0.140 0.801/0.148 0.810/0.144
-  Flex-MoE      | 0.713/0.162 0.688/0.152 0.723/0.166 | 0.739/0.183 0.778/0.175 0.798/0.163
-  MUSE          | 0.682/0.181 0.690/0.149 0.726/0.160 | 0.778/0.169 0.818/0.131 0.814/0.150
-  MOTCat        |    -   /  -      -   /  -   0.724/0.141 |    -   /  -      -   /  -   0.809/0.133
-  HEALNet       | 0.675/0.160 0.657/0.162 0.701/0.143 | 0.775/0.162 0.798/0.186 0.811/0.151
-  ShaSpec       | 0.692/0.167 0.683/0.150 0.735/0.166 | 0.740/0.182 0.796/0.143 0.797/0.159
-  DCMD-Surv*    | 0.751/0.121 0.705/0.135 0.764/0.128 | 0.817/0.117 0.823/0.117 0.823/0.129
+==================================================================
+MASTER COMPARISON — DCMD-Surv vs baselines across cohorts. C-index / IBS.
+==================================================================
 
-NOTE: DCMD-Surv* (ours) has the highest C-index AND lowest IBS in the complete
-scenario on BOTH cohorts, and the lowest IBS across all scenarios. 60% tables in
-the per-cohort files (comparison_KIRC.txt, comparison_GBMLGG.txt).
+--- 0% MISSING · COMPLETE scenario (C) ---
+  METHOD        | KIRC          | GBMLGG        | LUAD         
+  zero-fill     | 0.729/0.158 | 0.810/0.144 | 0.566/0.229
+  mean-imp      | 0.729/0.158 | 0.810/0.144 | 0.566/0.229
+  KNN-imp       | 0.729/0.158 | 0.810/0.144 | 0.566/0.229
+  Flex-MoE      | 0.723/0.166 | 0.798/0.163 | 0.576/0.242
+  MUSE          | 0.726/0.160 | 0.814/0.150 | 0.562/0.209
+  MOTCat        | 0.724/0.141 | 0.809/0.133 | 0.559/0.169
+  HEALNet       | 0.701/0.143 | 0.811/0.151 | 0.553/0.194
+  ShaSpec       | 0.735/0.166 | 0.797/0.159 | 0.581/0.237
+  DCMD-Surv*    | 0.764/0.128 | 0.823/0.129 | 0.591/0.161
+
+--- 60% MISSING · COMPLETE scenario (C) ---
+  METHOD        | KIRC          | GBMLGG        | LUAD         
+  zero-fill     | 0.734/0.145 | 0.816/0.131 | 0.567/0.208
+  mean-imp      | 0.736/0.149 | 0.813/0.138 | 0.570/0.211
+  KNN-imp       | 0.717/0.156 | 0.806/0.138 | 0.569/0.213
+  Flex-MoE      | 0.723/0.161 | 0.803/0.157 | 0.566/0.217
+  MUSE          | 0.713/0.149 | 0.814/0.132 | 0.554/0.215
+  HEALNet       | 0.705/0.148 | 0.816/0.147 | 0.553/0.193
+  ShaSpec       | 0.710/0.158 | 0.803/0.148 | 0.566/0.217
+  DCMD-Surv*    | 0.759/0.132 | 0.817/0.133 | 0.571/0.161
+
+WHAT HOLDS (verified cell-by-cell against every baseline):
+  * COMPLETE (C) scenario: DCMD-Surv has the HIGHEST C-index on all three
+    cohorts at BOTH 0% and 60% missing (6/6 cells).
+  * IBS (calibration): DCMD-Surv is the LOWEST in 17 of the 18 cells across
+    all cohorts/settings/scenarios.
+
+EXCEPTIONS (stated explicitly — DCMD is NOT best in these 3 cells):
+  - GBMLGG 60% complete, IBS : zero-fill 0.131 < DCMD 0.133
+  - LUAD 0% image-miss(G), C : ShaSpec 0.581 > DCMD 0.560
+  - LUAD 60% genes-miss(P), C: mean-imp 0.562 > DCMD 0.558
+  LUAD is the hardest cohort overall (all methods 0.52-0.59); the single-modality
+  scenarios there are within fold-noise of the imputation baselines.
+
+Per-scenario (P/G/C) detail for each cohort: comparison_<COHORT>.txt
+MOTCat is a complete-data reference (no missing scenarios), as in EMMS.
 
 
 ==============================================================================
@@ -82,3 +109,78 @@ Feature-matched (UNI2h + BulkRNABert pooled). DCMD-Surv* = ours. MOTCat=complete
   HEALNet       | 0.781/0.162 | 0.789/0.161 | 0.816/0.147
   ShaSpec       | 0.774/0.164 | 0.788/0.155 | 0.803/0.148
   DCMD-Surv*    | 0.814/0.118 | 0.823/0.117 | 0.817/0.133
+
+
+==============================================================================
+LUAD — DCMD-Surv vs baselines. C-index/IBS (higher C / lower IBS = better).
+Feature-matched (UNI2h + BulkRNABert pooled). DCMD-Surv* = ours. MOTCat=complete-only ref.
+==============================================================================
+
+--- 0% MISSING ---
+  METHOD        | P (C/IBS)     | G (C/IBS)     | C (C/IBS)    
+  zero-fill     | 0.552/0.224 | 0.547/0.207 | 0.566/0.229
+  mean-imp      | 0.554/0.231 | 0.561/0.206 | 0.566/0.229
+  KNN-imp       | 0.544/0.240 | 0.566/0.214 | 0.566/0.229
+  Flex-MoE      | 0.565/0.228 | 0.575/0.215 | 0.576/0.242
+  MUSE          | 0.554/0.228 | 0.566/0.183 | 0.562/0.209
+  MOTCat        |    -   /  -   |    -   /  -   | 0.559/0.169
+  HEALNet       | 0.568/0.203 | 0.517/0.191 | 0.553/0.194
+  ShaSpec       | 0.561/0.234 | 0.581/0.215 | 0.581/0.237
+  DCMD-Surv*    | 0.574/0.164 | 0.560/0.170 | 0.591/0.161
+
+--- 60% MISSING ---
+  METHOD        | P (C/IBS)     | G (C/IBS)     | C (C/IBS)    
+  zero-fill     | 0.554/0.215 | 0.542/0.187 | 0.567/0.208
+  mean-imp      | 0.562/0.216 | 0.545/0.200 | 0.570/0.211
+  KNN-imp       | 0.559/0.217 | 0.545/0.213 | 0.569/0.213
+  Flex-MoE      | 0.544/0.230 | 0.537/0.226 | 0.566/0.217
+  MUSE          | 0.548/0.223 | 0.525/0.219 | 0.554/0.215
+  HEALNet       | 0.555/0.201 | 0.544/0.186 | 0.553/0.193
+  ShaSpec       | 0.553/0.223 | 0.548/0.227 | 0.566/0.217
+  DCMD-Surv*    | 0.558/0.165 | 0.560/0.170 | 0.571/0.161
+
+
+==============================================================================
+SUPPLEMENTARY — REAL-MISSING AUGMENTATION (DCMD-Surv only)
+Train additionally on genuinely single-modality patients that the paired-only
+protocol (and DisPro/EMMS) discard. Test set UNCHANGED, so directly comparable.
+==============================================================================
+
+--- KIRC (+92 gene-only, +2 image-only) ---
+  [0% simulated]        paired-only -> +real-missing
+    genes-miss(P)  C 0.7509->0.7577 (+0.0068) | IBS 0.1206->0.1201 (-0.0005)
+    image-miss(G)  C 0.7053->0.7113 (+0.0060) | IBS 0.1353->0.1328 (-0.0025)
+    both(C)        C 0.7637->0.7650 (+0.0013) | IBS 0.1275->0.1287 (+0.0012)
+  [60% simulated, avg]  paired-only -> +real-missing
+    genes-miss(P)  C 0.7370->0.7422 (+0.0052) | IBS 0.1221->0.1215 (-0.0006)
+    image-miss(G)  C 0.7052->0.7115 (+0.0063) | IBS 0.1354->0.1326 (-0.0027)
+    both(C)        C 0.7587->0.7603 (+0.0016) | IBS 0.1324->0.1331 (+0.0007)
+
+--- GBMLGG (+79 gene-only, +177 image-only) ---
+  [0% simulated]        paired-only -> +real-missing
+    genes-miss(P)  C 0.8165->0.8161 (-0.0004) | IBS 0.1165->0.1166 (+0.0002)
+    image-miss(G)  C 0.8226->0.8235 (+0.0008) | IBS 0.1173->0.1160 (-0.0013)
+    both(C)        C 0.8234->0.8144 (-0.0090) | IBS 0.1293->0.1210 (-0.0084)
+  [60% simulated, avg]  paired-only -> +real-missing
+    genes-miss(P)  C 0.8135->0.8156 (+0.0021) | IBS 0.1182->0.1169 (-0.0013)
+    image-miss(G)  C 0.8232->0.8237 (+0.0005) | IBS 0.1170->0.1159 (-0.0011)
+    both(C)        C 0.8171->0.8124 (-0.0047) | IBS 0.1328->0.1256 (-0.0072)
+
+--- LUAD (+51 gene-only, +3 image-only) ---
+  [0% simulated]        paired-only -> +real-missing
+    genes-miss(P)  C 0.5739->0.5692 (-0.0047) | IBS 0.1636->0.1633 (-0.0004)
+    image-miss(G)  C 0.5597->0.5753 (+0.0156) | IBS 0.1699->0.1664 (-0.0035)
+    both(C)        C 0.5913->0.5915 (+0.0002) | IBS 0.1608->0.1607 (-0.0001)
+  [60% simulated, avg]  paired-only -> +real-missing
+    genes-miss(P)  C 0.5594->0.5566 (-0.0028) | IBS 0.1650->0.1644 (-0.0006)
+    image-miss(G)  C 0.5586->0.5747 (+0.0161) | IBS 0.1700->0.1665 (-0.0035)
+    both(C)        C 0.5703->0.5747 (+0.0044) | IBS 0.1610->0.1609 (-0.0001)
+
+HONEST READ-OUT (no cherry-picking):
+  * C-index improved in 13/18 cells — effect is SMALL and MIXED.
+    Best gain: LUAD image-miss(G) +0.0156. Worst loss: GBMLGG both(C) -0.0090.
+  * IBS (calibration) improved in 15/18 cells — the more consistent
+    benefit. Best gain: GBMLGG both(C) -0.0084.
+  * Conclusion: real-missing data is usable by DCMD-Surv without imputation and
+    mainly helps CALIBRATION; it is not a reliable discrimination boost.
+    Reported as a supplementary finding, NOT as a headline claim.

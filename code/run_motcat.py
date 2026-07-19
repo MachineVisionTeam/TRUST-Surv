@@ -35,18 +35,23 @@ OMIC_SPLIT = [43, 86, 129, 172, 215, 256]   # cut points -> 6 groups of BulkRNAB
 N_BINS = 4
 
 COHORT = os.environ.get("COHORT", "KIRC").upper()
+_MM = "/home/sbarua/Region_based_segmentation/missing_modality"
+_BAGS = None
 if COHORT == "GBMLGG":
     import pickle
-    SPLITS_DIR = "/home/sbarua/Region_based_segmentation/missing_modality/data_gbmlgg/splits"
-    _GBM_BAGS = pickle.load(open(
-        "/home/sbarua/Region_based_segmentation/missing_modality/data_gbmlgg/gbmlgg_patient_bags_uni2h.pkl", "rb"))
+    SPLITS_DIR = f"{_MM}/data_gbmlgg/splits"
+    _BAGS = pickle.load(open(f"{_MM}/data_gbmlgg/gbmlgg_patient_bags_uni2h.pkl", "rb"))
+elif COHORT == "LUAD":
+    import pickle
+    SPLITS_DIR = f"{_MM}/data_luad/splits"
+    _BAGS = pickle.load(open(f"{_MM}/data_luad/luad_patient_bags_uni2h.pkl", "rb"))
 else:
     SPLITS_DIR = DISPRO_SPLITS
 
 
 def load_bag(pid, device):
-    if COHORT == "GBMLGG":
-        return torch.from_numpy(_GBM_BAGS[pid]).float().to(device)   # (n_patches, 1536)
+    if _BAGS is not None:                                             # GBMLGG / LUAD: cached bags
+        return torch.from_numpy(_BAGS[pid]).float().to(device)       # (n_patches, 1536)
     x = torch.load(os.path.join(WSI_BAG_DIR, f"{pid}.pt"), map_location="cpu", weights_only=False)
     if isinstance(x, dict):
         x = x.get("features", next(iter(x.values())))

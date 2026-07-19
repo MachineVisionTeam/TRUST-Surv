@@ -25,8 +25,11 @@ for p in (HYPAL, CODE):
 from genodistil_cpkf import (cox_partial_likelihood_loss, ranking_distillation_loss,  # noqa: E402
                              cindex_lifelines)
 from dataset_mm import load_gene_dict, load_fold_config, CONFIGS  # noqa: E402
-if os.environ.get("COHORT", "KIRC").upper() == "GBMLGG":
+_RMC = os.environ.get("COHORT", "KIRC").upper()
+if _RMC == "GBMLGG":
     from dataset_realmissing_gbmlgg import load_real_missing  # noqa: E402
+elif _RMC == "LUAD":
+    from dataset_realmissing_luad import load_real_missing  # noqa: E402
 else:
     from dataset_realmissing import load_real_missing  # noqa: E402
 from calibration_mm import cox_calibration_report  # noqa: E402

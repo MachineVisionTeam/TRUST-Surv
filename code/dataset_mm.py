@@ -81,10 +81,14 @@ def load_fold_config(fold: int, cfg: str, gene_dict: dict) -> dict:
     }
 
 
-# --- cohort dispatch: `COHORT=GBMLGG` re-exports the GBMLGG loader; KIRC default ---
-if os.environ.get("COHORT", "KIRC").upper() == "GBMLGG":
+# --- cohort dispatch: COHORT env selects the loader; KIRC is the default ---
+_COHORT = os.environ.get("COHORT", "KIRC").upper()
+if _COHORT == "GBMLGG":
     from dataset_gbmlgg import (load_gene_dict, load_fold_config,  # noqa: F401,F811
                                 CONFIGS)
+elif _COHORT == "LUAD":
+    from dataset_luad import (load_gene_dict, load_fold_config,  # noqa: F401,F811
+                              CONFIGS)
 
 
 if __name__ == "__main__":

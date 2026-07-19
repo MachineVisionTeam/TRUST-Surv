@@ -55,6 +55,29 @@ NUM = {
             "DCMD-Surv*": {"P": (0.814, 0.118), "G": (0.823, 0.117), "C": (0.817, 0.133)},
         },
     },
+    "LUAD": {
+        "0%": {
+            "zero-fill":  {"P": (0.552, 0.224), "G": (0.547, 0.207), "C": (0.566, 0.229)},
+            "mean-imp":   {"P": (0.554, 0.231), "G": (0.561, 0.206), "C": (0.566, 0.229)},
+            "KNN-imp":    {"P": (0.544, 0.240), "G": (0.566, 0.214), "C": (0.566, 0.229)},
+            "Flex-MoE":   {"P": (0.565, 0.228), "G": (0.575, 0.215), "C": (0.576, 0.242)},
+            "MUSE":       {"P": (0.554, 0.228), "G": (0.566, 0.183), "C": (0.562, 0.209)},
+            "MOTCat":     {"P": None,           "G": None,           "C": (0.559, 0.169)},
+            "HEALNet":    {"P": (0.568, 0.203), "G": (0.517, 0.191), "C": (0.553, 0.194)},
+            "ShaSpec":    {"P": (0.561, 0.234), "G": (0.581, 0.215), "C": (0.581, 0.237)},
+            "DCMD-Surv*": {"P": (0.574, 0.164), "G": (0.560, 0.170), "C": (0.591, 0.161)},
+        },
+        "60%": {
+            "zero-fill":  {"P": (0.554, 0.215), "G": (0.542, 0.187), "C": (0.567, 0.208)},
+            "mean-imp":   {"P": (0.562, 0.216), "G": (0.545, 0.200), "C": (0.570, 0.211)},
+            "KNN-imp":    {"P": (0.559, 0.217), "G": (0.545, 0.213), "C": (0.569, 0.213)},
+            "Flex-MoE":   {"P": (0.544, 0.230), "G": (0.537, 0.226), "C": (0.566, 0.217)},
+            "MUSE":       {"P": (0.548, 0.223), "G": (0.525, 0.219), "C": (0.554, 0.215)},
+            "HEALNet":    {"P": (0.555, 0.201), "G": (0.544, 0.186), "C": (0.553, 0.193)},
+            "ShaSpec":    {"P": (0.553, 0.223), "G": (0.548, 0.227), "C": (0.566, 0.217)},
+            "DCMD-Surv*": {"P": (0.558, 0.165), "G": (0.560, 0.170), "C": (0.571, 0.161)},
+        },
+    },
 }
 ORDER = ["zero-fill", "mean-imp", "KNN-imp", "Flex-MoE", "MUSE", "MOTCat", "HEALNet", "ShaSpec", "DCMD-Surv*"]
 SCEN = [("P", "genes-miss(P)"), ("G", "image-miss(G)"), ("C", "both(C)")]
@@ -82,20 +105,38 @@ def cohort_table(cohort):
 
 
 def master_table():
-    """Both cohorts side by side, complete(C) + the two missing scenarios, 0%."""
-    lines = ["=" * 96,
-             "MASTER COMPARISON — DCMD-Surv vs baselines across cohorts (0% missing). C-index / IBS.",
-             "=" * 96,
-             f"  {'METHOD':13s} | {'KIRC P':13s} {'KIRC G':13s} {'KIRC C':13s} | {'GBMLGG P':13s} {'GBMLGG G':13s} {'GBMLGG C':13s}"]
-    for m in ORDER:
-        k = NUM["KIRC"]["0%"].get(m); g = NUM["GBMLGG"]["0%"].get(m)
-        if not k:
-            continue
-        lines.append(f"  {m:13s} | {cell(k['P'])} {cell(k['G'])} {cell(k['C'])} | "
-                     f"{cell(g['P'])} {cell(g['G'])} {cell(g['C'])}")
-    lines.append("\nNOTE: DCMD-Surv* (ours) has the highest C-index AND lowest IBS in the complete")
-    lines.append("scenario on BOTH cohorts, and the lowest IBS across all scenarios. 60% tables in")
-    lines.append("the per-cohort files (comparison_KIRC.txt, comparison_GBMLGG.txt).")
+    """All cohorts side by side. Cohort-agnostic -> new cohorts auto-included."""
+    cohorts = list(NUM.keys())
+    lines = ["=" * (18 + 16 * len(cohorts)),
+             "MASTER COMPARISON — DCMD-Surv vs baselines across cohorts. C-index / IBS.",
+             "=" * (18 + 16 * len(cohorts))]
+    for setting in ["0%", "60%"]:
+        lines.append(f"\n--- {setting} MISSING · COMPLETE scenario (C) ---")
+        lines.append("  " + f"{'METHOD':13s} | " + " | ".join(f"{c:13s}" for c in cohorts))
+        for m in ORDER:
+            row = []
+            any_val = False
+            for c in cohorts:
+                d = NUM[c][setting].get(m)
+                if d:
+                    row.append(cell(d["C"])); any_val = True
+                else:
+                    row.append("   -   /  -  ")
+            if any_val:
+                lines.append(f"  {m:13s} | " + " | ".join(row))
+    lines.append("\nWHAT HOLDS (verified cell-by-cell against every baseline):")
+    lines.append("  * COMPLETE (C) scenario: DCMD-Surv has the HIGHEST C-index on all three")
+    lines.append("    cohorts at BOTH 0% and 60% missing (6/6 cells).")
+    lines.append("  * IBS (calibration): DCMD-Surv is the LOWEST in 17 of the 18 cells across")
+    lines.append("    all cohorts/settings/scenarios.")
+    lines.append("\nEXCEPTIONS (stated explicitly — DCMD is NOT best in these 3 cells):")
+    lines.append("  - GBMLGG 60% complete, IBS : zero-fill 0.131 < DCMD 0.133")
+    lines.append("  - LUAD 0% image-miss(G), C : ShaSpec 0.581 > DCMD 0.560")
+    lines.append("  - LUAD 60% genes-miss(P), C: mean-imp 0.562 > DCMD 0.558")
+    lines.append("  LUAD is the hardest cohort overall (all methods 0.52-0.59); the single-modality")
+    lines.append("  scenarios there are within fold-noise of the imputation baselines.")
+    lines.append("\nPer-scenario (P/G/C) detail for each cohort: comparison_<COHORT>.txt")
+    lines.append("MOTCat is a complete-data reference (no missing scenarios), as in EMMS.")
     return "\n".join(lines)
 
 

@@ -30,7 +30,9 @@ Scenarios: **P** = genes missing (image-only) · **G** = image missing (gene-onl
 `0%` = complete training · `60%` = missing training (avg of 5 blank-configs).
 **Feature-matched:** UNI2h image + BulkRNABert gene — the *same features for all methods*.
 
-> **DCMD-Surv is the best method on both cohorts, on both axes (C-index *and* IBS) in the complete scenario, and has the lowest IBS (best calibration) in *every* scenario** — beating Flex-MoE (NeurIPS'24), MUSE (ICLR'24), HEALNet (NeurIPS'24), ShaSpec (CVPR'23), MOTCat (ICCV'23), and naive imputation.
+> **DCMD-Surv has the highest C-index in the complete scenario on all three cohorts (0% and 60%), and the lowest IBS in 17 of 18 cells** — beating Flex-MoE (NeurIPS'24), MUSE (ICLR'24), HEALNet (NeurIPS'24), ShaSpec (CVPR'23), MOTCat (ICCV'23), and naive imputation.
+>
+> Exceptions are stated explicitly below rather than omitted.
 
 ### KIRC (n = 417 paired)
 
@@ -52,14 +54,26 @@ Scenarios: **P** = genes missing (image-only) · **G** = image missing (gene-onl
 | 0% | complete (C) | **0.823 / 0.129** | 0.814 / 0.133 (MUSE/MOTCat) |
 | 60% | genes-miss (P) | **0.814 / 0.118** | 0.802 / 0.134 (KNN) |
 | 60% | image-miss (G) | **0.823 / 0.117** | 0.809 / 0.130 (zero) |
-| 60% | complete (C) | **0.817 / 0.133** | 0.816 / 0.131 (HEALNet) |
+| 60% | complete (C) | **0.817** / 0.133 | 0.816 / **0.131** (zero) |
+
+### LUAD (n = 447 paired)
+
+| Setting | Scenario | **DCMD-Surv (ours)** C / IBS | Best baseline C / IBS |
+|---|---|---|---|
+| 0% | genes-miss (P) | **0.574 / 0.164** | 0.568 / 0.203 (HEALNet) |
+| 0% | image-miss (G) | 0.560 / **0.170** | **0.581** / 0.183 (ShaSpec/MUSE) |
+| 0% | complete (C) | **0.591 / 0.161** | 0.581 / 0.169 (ShaSpec/MOTCat) |
+| 60% | genes-miss (P) | 0.558 / **0.165** | **0.562** / 0.201 (mean/HEALNet) |
+| 60% | image-miss (G) | **0.560 / 0.170** | 0.548 / 0.186 (ShaSpec/HEALNet) |
+| 60% | complete (C) | **0.571 / 0.161** | 0.570 / 0.193 (mean/HEALNet) |
 
 **Key takeaways**
 
-- DCMD-Surv **wins the complete scenario on both cohorts** (C-index & IBS).
-- DCMD-Surv has the **lowest IBS (best-calibrated) in every scenario, both cohorts** — a consistent, clinically-meaningful advantage baselines don't have.
-- On single-modality scenarios it **leads or ties** the best baseline while staying markedly better calibrated.
-- **Real-missing experiment:** adding genuinely single-modality patients helps (discrimination on KIRC, calibration on GBMLGG) — see `dcmd_realmissing__*.txt`.
+- DCMD-Surv has the **highest C-index in the complete scenario on all three cohorts**, at both 0% and 60% missing (6/6 cells).
+- DCMD-Surv has the **lowest IBS (best calibration) in 17 of 18 cells** — the most consistent advantage, and the one that matters clinically.
+- **Where it does *not* win (stated openly):** GBMLGG 60% complete IBS (zero-fill 0.131 < ours 0.133); LUAD 0% image-miss C-index (ShaSpec 0.581 > ours 0.560); LUAD 60% genes-miss C-index (mean-imp 0.562 > ours 0.558).
+- **LUAD is the hardest cohort** — *every* method lands in 0.52–0.59, so the single-modality scenarios there sit within fold-noise of the imputation baselines. The calibration gap (0.161 vs 0.19–0.24) is the clear separation.
+- **Real-missing experiment:** training on genuinely single-modality patients is *usable without imputation* and mainly improves **calibration** (IBS better in 15/18 cells); the C-index effect is small and mixed (13/18, best +0.0156 on LUAD image-miss, worst −0.0090 on GBMLGG complete). Reported as supplementary, not headline — see `dcmd_realmissing__*.txt`.
 
 *Full per-method numbers (every baseline): [`COMPARISON.txt`](COMPARISON.txt) and each cohort's `comparison_*.txt`.*
 
@@ -77,8 +91,8 @@ DCMD-Surv/
 │   ├── run_dcmd_cal.py                # train/eval ours (C-index + IBS + cal-MAD)
 │   ├── run_dcmd_realmissing.py        # real-missing (exploit single-modality cases)
 │   ├── genodistil_cpkf.py             # HGBF fusion backbone (from HyPAL-Surv)
-│   ├── dataset_mm.py / dataset_gbmlgg.py       # per-cohort loaders (COHORT dispatch)
-│   ├── generate_gbmlgg_splits.py / build_gbmlgg_bags.py   # data prep
+│   ├── dataset_mm.py / dataset_gbmlgg.py / dataset_luad.py   # loaders (COHORT dispatch)
+│   ├── generate_{gbmlgg,luad}_splits.py / build_{gbmlgg,luad}_bags.py   # data prep
 │   ├── baseline_impute.py             # naive zero/mean/KNN imputation
 │   ├── flexmoe_surv.py, run_flexmoe.py         # Flex-MoE (NeurIPS'24)
 │   ├── muse_surv.py, run_muse.py               # MUSE (ICLR'24)
@@ -86,12 +100,15 @@ DCMD-Surv/
 │   ├── run_healnet.py                          # HEALNet (NeurIPS'24)
 │   ├── shaspec_surv.py, run_shaspec.py         # ShaSpec (CVPR'23)
 │   ├── calibration_mm.py / compute_ibs_dispro.py   # IBS / survival-curve utils
-│   └── make_comparison_bars.py / make_km_figure.py /
-│       make_calibration_figure.py / make_tables.py   # figures + tables
+│   └── make_comparison_bars.py / make_km_figure.py / make_calibration_figure.py /
+│       make_tables.py / make_repo_comparison.py      # figures + tables
 ├── KIRC/
 │   ├── results/            # per-method .txt (C-index + IBS, 0% + 60%) + comparison_KIRC.txt
 │   └── figures/            # fig_comparison / fig_km_stratification / fig_calibration
-└── GBMLGG/
+├── GBMLGG/
+│   ├── results/            # (same layout)
+│   └── figures/            # (same layout)
+└── LUAD/
     ├── results/            # (same layout)
     └── figures/            # (same layout)
 ```
@@ -106,6 +123,7 @@ Cohort is selected by the `COHORT` env var (KIRC is the default).
 # our method (C-index + IBS + cal-MAD), both 0% and 60% missing:
 COHORT=KIRC   python3 code/run_dcmd_cal.py --epochs 30
 COHORT=GBMLGG python3 code/run_dcmd_cal.py --epochs 30
+COHORT=LUAD   python3 code/run_dcmd_cal.py --epochs 30
 
 # a baseline (example):
 COHORT=GBMLGG python3 code/run_healnet.py --epochs 40
@@ -116,8 +134,9 @@ COHORT=GBMLGG python3 code/run_dcmd_realmissing.py --epochs 30
 # figures + tables:
 COHORT=KIRC python3 code/make_km_figure.py
 COHORT=KIRC python3 code/make_calibration_figure.py
-python3 code/make_comparison_bars.py     # both cohorts (numbers in NUMBERS dict)
+python3 code/make_comparison_bars.py     # all cohorts (numbers in NUMBERS dict)
 python3 code/make_tables.py              # comparison_*.txt + MASTER_comparison.txt
+python3 code/make_repo_comparison.py     # rebuild COMPARISON.txt from make_tables.py
 ```
 
 ---
@@ -126,7 +145,7 @@ python3 code/make_tables.py              # comparison_*.txt + MASTER_comparison.
 
 - **Protocol:** 5-fold CV; scenarios P/G/C; missing settings 0% and 60% (5 blank-configs avg). Metrics: C-index (discrimination) + IBS (calibration).
 - **Dependencies:** `torch`, `numpy`, `pandas`, `scikit-learn`, `scikit-survival`, `lifelines`, `torch_geometric` (MUSE), `pot` (MOTCat), `python-box` + `einops` (HEALNet).
-- **Cohorts done:** KIRC (417), GBMLGG (592). Add LUAD/BRCA by adding a `dataset_<cohort>.py` + a `COHORT` branch, then rerun the same commands.
+- **Cohorts done:** KIRC (417 paired), GBMLGG (592), LUAD (447). Add another cohort (e.g. BRCA) by adding a `dataset_<cohort>.py` + a `COHORT` branch, then rerun the same commands.
 
 ---
 

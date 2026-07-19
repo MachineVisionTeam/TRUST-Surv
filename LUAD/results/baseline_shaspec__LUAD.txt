@@ -1,0 +1,15 @@
+================================================================
+BASELINE: ShaSpec-Surv (CVPR'23, shared-specific, faithful) — LUAD 5-fold
+================================================================
+
+TABLE 1 (0%)
+  scenario         C-index | IBS
+  genes-miss(P)   0.5608  | 0.2343
+  image-miss(G)   0.5814  | 0.2147
+  both(C)         0.5805  | 0.2371
+
+TABLE 2 (60% avg)
+  scenario         C-index | IBS
+  genes-miss(P)   0.5527  | 0.2231
+  image-miss(G)   0.5478  | 0.2266
+  both(C)         0.5660  | 0.2172
