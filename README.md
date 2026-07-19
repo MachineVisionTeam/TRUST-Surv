@@ -19,16 +19,82 @@ Our goals:
 3. **Trustworthy probabilities** — optimize not just ranking (**C-index**) but **calibration (IBS)**: predicted survival probabilities should be reliable, which matters most in the clinic.
 4. **Exploit real incomplete cohorts** — train on genuinely single-modality patients that prior methods throw away.
 
-*(Full model in [`ARCHITECTURE.txt`](ARCHITECTURE.txt); full head-to-head in [`COMPARISON.txt`](COMPARISON.txt).)*
+---
+
+## 🏗️ How the Model Works
+
+**The problem in one sentence.** A patient with only a slide (no sequencing) gets a worse prediction than a patient with both — because histology alone has a hard ceiling. Genes carry prognostic signal the slide simply doesn't show.
+
+**The usual fix, and why we avoid it.** Most methods *invent* the missing genes (imputation / reconstruction / an LLM "recovering" the modality). But invented genes are a guess presented as a measurement — the model then becomes over-confident, and its survival probabilities stop being trustworthy.
+
+**Our fix — move the knowledge, not the data.** We never reconstruct the missing modality. Instead, *during training* (when both modalities are present), we teach the image branch to organise its features the way the gene branch does. At test time the image branch keeps that gene-shaped structure even with no genes in sight.
+
+### The four pieces
+
+**1. Two adapters → a shared space.**
+Image (UNI2h, 1536-d) and genes (BulkRNABert, 256-d) each pass through a small adapter into a common 256-d space (`z_img`, `z_gene`). Different sizes, now comparable.
+
+**2. Decomposition into a "general" component.**
+Each modality is projected a second time into a **modality-general** component — `G_img` and `G_gene` — meant to hold what the two modalities *agree* about (the shared biology), as opposed to what is unique to a slide or to a transcriptome.
+
+**3. Cross-modal distillation (the key step).**
+We pull `G_img` toward `G_gene`:
+
+```
+L_align = MSE( normalize(G_img), normalize(G_gene).detach() )     # both-present patients only
+```
+
+`.detach()` makes this **one-directional**: genes teach the image, never the reverse. The image branch must move to meet the gene branch. Because `L_align` only compares *general components*, the image branch is never asked to reproduce actual gene values — **no reconstruction, so no imputation.**
+
+> We tested making it bidirectional (fused-teacher → gene head). It **hurt** — the gene-only head started relying on image-derived patterns it cannot access when the image is absent (image-missing C-index 0.706 → 0.685). We kept it one-directional and report this honestly.
+
+**4. Absent tokens + three specialised heads.**
+A missing modality is replaced by a **learned "absent" vector** — an explicit *"this is not here"* signal, not a fake measurement:
+
+```
+z_img  = present ? z_img  : absent_image      (learned parameter)
+z_gene = present ? z_gene : absent_gene
+```
+
+Three heads then predict risk, each for its own situation:
+
+| Head | Used when | Reads |
+|---|---|---|
+| `h_F` | both present | HGBF-fused representation |
+| `h_I` | **genes missing** | `G_img` — the *gene-aligned* image component |
+| `h_G` | **image missing** | `z_gene` — the full gene features |
+
+`h_I` is where the gain comes from: it reads the component that was trained to imitate genes, so an image-only patient gets a **gene-informed** prediction.
+
+### Training objective
+
+```
+L = Cox(h_F) + λ_aux · [ Cox(h_G) + Cox(h_I) ] + λ_a · L_align + λ_d · L_rank
+```
+
+Cox partial-likelihood on each head, plus the feature alignment, plus a small gene→image ranking-distillation term. **≈2.5 M parameters** — light enough to train in minutes.
+
+```
+x_img (1536) ──adapter──> z_img ──> G_img ──┐(pull toward)     ──> h_I   [genes missing]
+                             │              │  L_align
+x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached) ──> h_G  [image missing]
+                             │
+                    [absent tokens] ──> HGBF fusion ──────────────> h_F   [complete]
+```
+
+*(Full detail in [`ARCHITECTURE.txt`](ARCHITECTURE.txt); full head-to-head numbers in [`COMPARISON.txt`](COMPARISON.txt).)*
 
 ---
 
 ## 📊 Main Results
 
-**5-fold CV.** C-index ↑ higher = better (discrimination) · IBS ↓ lower = better (calibration).
-Scenarios: **P** = genes missing (image-only) · **G** = image missing (gene-only) · **C** = complete.
-`0%` = complete training · `60%` = missing training (avg of 5 blank-configs).
-**Feature-matched:** UNI2h image + BulkRNABert gene — the *same features for all methods*.
+**The two metrics, in plain terms:**
+
+- **C-index ↑** — *ranking*. "Of two patients, did the model correctly say which one dies sooner?" 0.5 = coin flip, 1.0 = perfect.
+- **IBS ↓** — *calibration*. "When the model says *72% chance of surviving 3 years*, does that actually happen 72% of the time?" A model can rank well yet still state wrong probabilities — and it is the probability a clinician acts on.
+
+**Setup.** 5-fold CV. Scenarios: **P** = genes missing (image-only) · **G** = image missing (gene-only) · **C** = complete. `0%` = complete training data · `60%` = 60% of training patients missing a modality (avg of 5 configurations).
+**Feature-matched:** every method gets the *identical* UNI2h image + BulkRNABert gene features — so differences come from the method, not the features.
 
 > **DCMD-Surv has the highest C-index in the complete scenario on all three cohorts (0% and 60%), and the lowest IBS in 17 of 18 cells** — beating Flex-MoE (NeurIPS'24), MUSE (ICLR'24), HEALNet (NeurIPS'24), ShaSpec (CVPR'23), MOTCat (ICCV'23), and naive imputation.
 >
