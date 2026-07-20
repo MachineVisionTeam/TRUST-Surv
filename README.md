@@ -8,7 +8,7 @@ A multimodal (histology WSI + genomics) cancer **survival-prediction** model tha
 
 ---
 
-## 🎯 Main Goal — why we built it
+## Main Goal — why we built it
 
 In the real clinic, patients often have only **one** modality: a pathology slide but no sequencing, or sequencing but no usable slide. Existing strong methods either **discard** single-modality patients, or **impute** the missing modality (e.g., DisPro uses an LLM to "recover" it) — which can hallucinate signal and produce over-confident, **poorly-calibrated** risk scores.
 
@@ -21,7 +21,7 @@ Our goals:
 
 ---
 
-## 🏗️ How the Model Works
+## How the Model Works
 
 **The problem in one sentence.** A patient with only a slide (no sequencing) gets a worse prediction than a patient with both — because histology alone has a hard ceiling. Genes carry prognostic signal the slide simply doesn't show.
 
@@ -86,7 +86,7 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 
 ---
 
-## 📊 Main Results
+## Main Results
 
 **The two metrics, in plain terms:**
 
