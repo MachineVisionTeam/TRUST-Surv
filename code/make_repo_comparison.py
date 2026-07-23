@@ -23,7 +23,7 @@ HEADER = """\
 # Baselines: naive(zero/mean/KNN) + Flex-MoE(NeurIPS24) + MUSE(ICLR24) +
 #            MOTCat(ICCV23, complete-ref) + HEALNet(NeurIPS24) + ShaSpec(CVPR23).
 # Protocol: 5-fold CV; 0% and 60% missing (60% = mean over 5 blank-configs).
-# Cohorts: KIRC (n=333 tr), GBMLGG (n=473 tr), LUAD (n=357 tr).
+# Cohorts: KIRC (417 paired), GBMLGG (592), LUAD (447), UCEC (467), BRCA (940).
 ################################################################################
 """
 
@@ -58,11 +58,14 @@ def real_missing_section():
     ic = sum(1 for d in deltas_c if d > 0); ii = sum(1 for d in deltas_i if d < 0)
     lines += ["\nHONEST READ-OUT (no cherry-picking):",
               f"  * C-index improved in {ic}/{len(deltas_c)} cells — effect is SMALL and MIXED.",
-              "    Best gain: LUAD image-miss(G) +0.0156. Worst loss: GBMLGG both(C) -0.0090.",
-              f"  * IBS (calibration) improved in {ii}/{len(deltas_i)} cells — the more consistent",
-              "    benefit. Best gain: GBMLGG both(C) -0.0084.",
-              "  * Conclusion: real-missing data is usable by DCMD-Surv without imputation and",
-              "    mainly helps CALIBRATION; it is not a reliable discrimination boost.",
+              "    Best gain: LUAD image-miss(G) +0.0161. Worst loss: UCEC image-miss(G) -0.0300.",
+              f"  * IBS (calibration) improved in {ii}/{len(deltas_i)} cells.",
+              "    Best gain: GBMLGG both(C) -0.0084.",
+              "  * Cohort split: KIRC/LUAD/BRCA are near-neutral-to-positive; GBMLGG improves",
+              "    calibration; UCEC DEGRADES the image-miss C-index (-0.030) — so the net",
+              "    effect across all five cohorts is inconsistent.",
+              "  * Conclusion: real-missing data is usable by DCMD-Surv without imputation, but",
+              "    it is NOT a reliable discrimination or calibration boost across cohorts.",
               "    Reported as a supplementary finding, NOT as a headline claim."]
     return "\n".join(lines)
 

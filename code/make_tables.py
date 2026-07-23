@@ -78,6 +78,52 @@ NUM = {
             "DCMD-Surv*": {"P": (0.558, 0.165), "G": (0.560, 0.170), "C": (0.571, 0.161)},
         },
     },
+    "UCEC": {
+        "0%": {
+            "zero-fill":  {"P": (0.629, 0.104), "G": (0.604, 0.091), "C": (0.698, 0.084)},
+            "mean-imp":   {"P": (0.661, 0.093), "G": (0.643, 0.092), "C": (0.698, 0.084)},
+            "KNN-imp":    {"P": (0.675, 0.094), "G": (0.611, 0.098), "C": (0.698, 0.084)},
+            "Flex-MoE":   {"P": (0.654, 0.095), "G": (0.617, 0.108), "C": (0.675, 0.096)},
+            "MUSE":       {"P": (0.637, 0.080), "G": (0.622, 0.084), "C": (0.659, 0.080)},
+            "MOTCat":     {"P": None,           "G": None,           "C": (0.674, 0.090)},
+            "HEALNet":    {"P": (0.660, 0.080), "G": (0.657, 0.085), "C": (0.684, 0.084)},
+            "ShaSpec":    {"P": (0.657, 0.096), "G": (0.654, 0.099), "C": (0.680, 0.087)},
+            "DCMD-Surv*": {"P": (0.669, 0.087), "G": (0.672, 0.088), "C": (0.702, 0.082)},
+        },
+        "60%": {
+            "zero-fill":  {"P": (0.646, 0.092), "G": (0.621, 0.096), "C": (0.672, 0.093)},
+            "mean-imp":   {"P": (0.635, 0.093), "G": (0.622, 0.096), "C": (0.671, 0.094)},
+            "KNN-imp":    {"P": (0.640, 0.090), "G": (0.615, 0.100), "C": (0.661, 0.092)},
+            "Flex-MoE":   {"P": (0.624, 0.097), "G": (0.589, 0.110), "C": (0.661, 0.098)},
+            "MUSE":       {"P": (0.665, 0.080), "G": (0.595, 0.084), "C": (0.670, 0.080)},
+            "HEALNet":    {"P": (0.646, 0.086), "G": (0.614, 0.091), "C": (0.668, 0.084)},
+            "ShaSpec":    {"P": (0.650, 0.096), "G": (0.595, 0.105), "C": (0.668, 0.098)},
+            "DCMD-Surv*": {"P": (0.651, 0.081), "G": (0.657, 0.085), "C": (0.679, 0.083)},
+        },
+    },
+    "BRCA": {
+        "0%": {
+            "zero-fill":  {"P": (0.596, 0.135), "G": (0.457, 0.118), "C": (0.581, 0.138)},
+            "mean-imp":   {"P": (0.594, 0.134), "G": (0.487, 0.119), "C": (0.581, 0.138)},
+            "KNN-imp":    {"P": (0.608, 0.132), "G": (0.518, 0.136), "C": (0.581, 0.138)},
+            "Flex-MoE":   {"P": (0.588, 0.136), "G": (0.528, 0.139), "C": (0.579, 0.140)},
+            "MUSE":       {"P": (0.506, 0.115), "G": (0.524, 0.110), "C": (0.510, 0.104)},
+            "MOTCat":     {"P": None,           "G": None,           "C": (0.578, 0.110)},
+            "HEALNet":    {"P": (0.592, 0.117), "G": (0.508, 0.114), "C": (0.570, 0.110)},
+            "ShaSpec":    {"P": (0.589, 0.140), "G": (0.491, 0.133), "C": (0.577, 0.143)},
+            "DCMD-Surv*": {"P": (0.622, 0.102), "G": (0.542, 0.103), "C": (0.612, 0.103)},
+        },
+        "60%": {
+            "zero-fill":  {"P": (0.592, 0.125), "G": (0.526, 0.114), "C": (0.576, 0.128)},
+            "mean-imp":   {"P": (0.594, 0.126), "G": (0.503, 0.121), "C": (0.576, 0.131)},
+            "KNN-imp":    {"P": (0.580, 0.132), "G": (0.519, 0.128), "C": (0.557, 0.135)},
+            "Flex-MoE":   {"P": (0.594, 0.133), "G": (0.502, 0.138), "C": (0.574, 0.137)},
+            "MUSE":       {"P": (0.526, 0.104), "G": (0.542, 0.104), "C": (0.554, 0.104)},
+            "HEALNet":    {"P": (0.613, 0.112), "G": (0.524, 0.118), "C": (0.573, 0.114)},
+            "ShaSpec":    {"P": (0.598, 0.133), "G": (0.508, 0.139), "C": (0.579, 0.139)},
+            "DCMD-Surv*": {"P": (0.624, 0.102), "G": (0.510, 0.104), "C": (0.619, 0.103)},
+        },
+    },
 }
 ORDER = ["zero-fill", "mean-imp", "KNN-imp", "Flex-MoE", "MUSE", "MOTCat", "HEALNet", "ShaSpec", "DCMD-Surv*"]
 SCEN = [("P", "genes-miss(P)"), ("G", "image-miss(G)"), ("C", "both(C)")]
@@ -125,16 +171,25 @@ def master_table():
             if any_val:
                 lines.append(f"  {m:13s} | " + " | ".join(row))
     lines.append("\nWHAT HOLDS (verified cell-by-cell against every baseline):")
-    lines.append("  * COMPLETE (C) scenario: DCMD-Surv has the HIGHEST C-index on all three")
-    lines.append("    cohorts at BOTH 0% and 60% missing (6/6 cells).")
-    lines.append("  * IBS (calibration): DCMD-Surv is the LOWEST in 17 of the 18 cells across")
-    lines.append("    all cohorts/settings/scenarios.")
-    lines.append("\nEXCEPTIONS (stated explicitly — DCMD is NOT best in these 3 cells):")
-    lines.append("  - GBMLGG 60% complete, IBS : zero-fill 0.131 < DCMD 0.133")
-    lines.append("  - LUAD 0% image-miss(G), C : ShaSpec 0.581 > DCMD 0.560")
-    lines.append("  - LUAD 60% genes-miss(P), C: mean-imp 0.562 > DCMD 0.558")
-    lines.append("  LUAD is the hardest cohort overall (all methods 0.52-0.59); the single-modality")
-    lines.append("  scenarios there are within fold-noise of the imputation baselines.")
+    lines.append("  * COMPLETE (C) scenario: DCMD-Surv has the HIGHEST C-index on all five")
+    lines.append("    cohorts at BOTH 0% and 60% missing (10/10 cells).")
+    lines.append("  * IBS (calibration): DCMD-Surv is the LOWEST (or tied) in 23 of the 30 cells")
+    lines.append("    across all cohorts/settings/scenarios. The exception cohort is UCEC, where")
+    lines.append("    MUSE is better-calibrated (lower IBS) in all 6 cells.")
+    lines.append("\nEXCEPTIONS (stated explicitly — DCMD is NOT best in these cells):")
+    lines.append("  C-index losses:")
+    lines.append("  - LUAD 0% image-miss(G) : ShaSpec 0.581 > DCMD 0.560")
+    lines.append("  - LUAD 60% genes-miss(P): mean-imp 0.562 > DCMD 0.558")
+    lines.append("  - UCEC 0% genes-miss(P) : KNN 0.675 > DCMD 0.669")
+    lines.append("  - UCEC 60% genes-miss(P): MUSE 0.665 > DCMD 0.651")
+    lines.append("  - BRCA 60% image-miss(G): MUSE 0.542 > DCMD 0.510")
+    lines.append("  IBS losses:")
+    lines.append("  - GBMLGG 60% complete   : zero-fill 0.131 < DCMD 0.133")
+    lines.append("  - UCEC (all 6 cells)    : MUSE ~0.080-0.084 < DCMD 0.081-0.088")
+    lines.append("  LUAD is the hardest cohort (all methods 0.52-0.59) and BRCA gene-only is")
+    lines.append("  near-random for everyone (~0.51-0.54); those single-modality scenarios sit")
+    lines.append("  within fold-noise of the imputation baselines. UCEC is well-calibrated for")
+    lines.append("  every method (IBS ~0.08), so its calibration gaps are small in absolute terms.")
     lines.append("\nPer-scenario (P/G/C) detail for each cohort: comparison_<COHORT>.txt")
     lines.append("MOTCat is a complete-data reference (no missing scenarios), as in EMMS.")
     return "\n".join(lines)
