@@ -1,6 +1,4 @@
-# DCMD-Surv
-
-### Decomposed Cross-Modal Distillation for Imputation-Free Missing-Modality Survival Prediction
+# DCMD-Surv: Decomposed Cross-Modal Distillation for Imputation-Free Missing-Modality Survival Prediction
 
 A multimodal (histology WSI + genomics) cancer **survival-prediction** model that keeps working when one modality is missing — **without imputing or reconstructing** the missing data.
 
