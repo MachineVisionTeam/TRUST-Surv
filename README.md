@@ -10,12 +10,13 @@ A multimodal (histology WSI + genomics) cancer **survival-prediction** model tha
 
 In the real clinic, patients often have only **one** modality: a pathology slide but no sequencing, or sequencing but no usable slide. Existing strong methods either **discard** single-modality patients, or **impute** the missing modality (e.g., DisPro uses an LLM to "recover" it) — which can hallucinate signal and produce over-confident, **poorly-calibrated** risk scores.
 
-Our goals:
+Our contributions:
 
-1. **Truly imputation-free** — never reconstruct the missing modality; use a learned *absent token* + a survival head specialized for each scenario.
-2. **Break the single-modality ceiling** — via **feature-level cross-modal distillation**: decompose each modality into a modality-*general* component and pull the image-general toward the gene-general, so the image-only head becomes *gene-informed*.
-3. **Trustworthy probabilities** — optimize not just ranking (**C-index**) but **calibration (IBS)**: predicted survival probabilities should be reliable, which matters most in the clinic.
-4. **Exploit real incomplete cohorts** — train on genuinely single-modality patients that prior methods throw away.
+1. **Distribution-free reliability under missing modalities — our headline.** We wrap each risk score in a **conformal lower predictive bound** with a provable coverage guarantee, and show the raw model becomes **overconfident** when a modality is missing (90% predictions cover only ~80–86% on 4/5 cohorts) while a post-hoc conformal layer **restores** the guarantee (valid ≥90% coverage in 14/15 cells, across 80/90/95%). See [Reliability](#reliability--distribution-free-coverage-guarantee-conformal). *First distribution-free coverage guarantee for histology–genomics survival under missing modalities.*
+2. **Calibration finding.** Imputation-based methods produce miscalibrated, over-confident survival probabilities; our imputation-free model is **better-calibrated** (lowest/tied IBS on 4 of 5 cohorts) — an axis most missing-modality papers ignore.
+3. **An imputation-free framework, validated broadly.** No modality is ever reconstructed (learned absent token + per-scenario heads + availability routing); competitive-to-best discrimination across **5 cohorts vs 8 baselines**.
+
+> **On honesty of components.** The name "DCMD" reflects the decomposition/distillation in the backbone, but an **ablation** (see [`ablation/`](ablation/)) shows the cross-modal distillation **and** the *learned* absent token have only a **marginal effect** — so we do **not** claim them as the source of the gains. The reliability guarantee and calibration are the real contributions; the fusion backbone is reused from prior work.
 
 ---
 
@@ -35,7 +36,7 @@ Image (UNI2h, 1536-d) and genes (BulkRNABert, 256-d) each pass through a small a
 **2. Decomposition into a "general" component.**
 Each modality is projected a second time into a **modality-general** component — `G_img` and `G_gene` — meant to hold what the two modalities *agree* about (the shared biology), as opposed to what is unique to a slide or to a transcriptome.
 
-**3. Cross-modal distillation (the key step).**
+**3. Cross-modal distillation (a lightweight auxiliary term — ablated as marginal).**
 We pull `G_img` toward `G_gene`:
 
 ```
@@ -62,7 +63,7 @@ Three heads then predict risk, each for its own situation:
 | `h_I` | **genes missing** | `G_img` — the *gene-aligned* image component |
 | `h_G` | **image missing** | `z_gene` — the full gene features |
 
-`h_I` is where the gain comes from: it reads the component that was trained to imitate genes, so an image-only patient gets a **gene-informed** prediction.
+`h_I` reads the gene-aligned component, so an image-only patient still gets a prediction. *(An ablation shows the alignment itself contributes only marginally — see [`ablation/`](ablation/); the routing + imputation-free design, not the distillation, is what carries the missing-modality behaviour.)*
 
 ### Training objective
 
@@ -247,13 +248,16 @@ DCMD-Surv/
 ├── BRCA/
 │   ├── results/            # comparison_BRCA.txt (comparison-only)
 │   └── figures/            # (same layout)
-└── conformal/              # conformal reliability star (post-hoc coverage guarantee)
-    ├── conformal_reliability__<COHORT>.txt   # naive vs conformal coverage, 80/90/95%
-    ├── conformal_summary.csv                 # machine-readable summary
-    └── fig_conformal_reliability.png         # coverage figure
+├── conformal/              # conformal reliability star (post-hoc coverage guarantee)
+│   ├── conformal_reliability__<COHORT>.txt   # naive vs conformal coverage, 80/90/95%
+│   ├── conformal_summary.csv                 # machine-readable summary
+│   └── fig_conformal_reliability.png         # coverage figure
+└── ablation/               # component ablations (honest: both are marginal)
+    ├── ablation_distillation.txt             # distillation on/off, 5 cohorts
+    └── ablation_absent_token.txt             # learned vs zero absent token, 5 cohorts
 ```
 
-*(Conformal code: `code/conformal_survival.py`, `code/run_conformal.py`, `code/make_conformal_figure.py`.)*
+*(Conformal code: `code/conformal_survival.py`, `code/run_conformal.py`, `code/make_conformal_figure.py`. Ablation code: `code/run_ablation2.py`, `code/run_ablation_absent.py`.)*
 
 ---
 

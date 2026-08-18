@@ -1,0 +1,45 @@
+
+==========================================================================
+KIRC — absent-token ablation (60%-missing setting, 5-fold, 5-config avg)
+  LEARNED = learned absent token (full)   ZERO = fixed zero-fill token
+==========================================================================
+  scenario                             | LEARNED  |  ZERO    |  delta (L-Z)
+  both(C)       [complete, uses token] | 0.7591  | 0.7590  | +0.0001  <-- headline
+  genes-miss(P) [image-only, control]  | 0.7382  | 0.7378  | +0.0004
+  image-miss(G) [gene-only, control]   | 0.7055  | 0.7055  | +0.0000
+
+==========================================================================
+GBMLGG — absent-token ablation (60%-missing setting, 5-fold, 5-config avg)
+  LEARNED = learned absent token (full)   ZERO = fixed zero-fill token
+==========================================================================
+  scenario                             | LEARNED  |  ZERO    |  delta (L-Z)
+  both(C)       [complete, uses token] | 0.8173  | 0.8169  | +0.0004  <-- headline
+  genes-miss(P) [image-only, control]  | 0.8139  | 0.8139  | +0.0000
+  image-miss(G) [gene-only, control]   | 0.8230  | 0.8231  | -0.0001
+
+==========================================================================
+LUAD — absent-token ablation (60%-missing setting, 5-fold, 5-config avg)
+  LEARNED = learned absent token (full)   ZERO = fixed zero-fill token
+==========================================================================
+  scenario                             | LEARNED  |  ZERO    |  delta (L-Z)
+  both(C)       [complete, uses token] | 0.5708  | 0.5693  | +0.0014  <-- headline
+  genes-miss(P) [image-only, control]  | 0.5582  | 0.5579  | +0.0003
+  image-miss(G) [gene-only, control]   | 0.5602  | 0.5601  | +0.0001
+
+==========================================================================
+UCEC — absent-token ablation (60%-missing setting, 5-fold, 5-config avg)
+  LEARNED = learned absent token (full)   ZERO = fixed zero-fill token
+==========================================================================
+  scenario                             | LEARNED  |  ZERO    |  delta (L-Z)
+  both(C)       [complete, uses token] | 0.6790  | 0.6790  | +0.0001  <-- headline
+  genes-miss(P) [image-only, control]  | 0.6506  | 0.6509  | -0.0003
+  image-miss(G) [gene-only, control]   | 0.6567  | 0.6567  | -0.0000
+
+==========================================================================
+BRCA — absent-token ablation (60%-missing setting, 5-fold, 5-config avg)
+  LEARNED = learned absent token (full)   ZERO = fixed zero-fill token
+==========================================================================
+  scenario                             | LEARNED  |  ZERO    |  delta (L-Z)
+  both(C)       [complete, uses token] | 0.5734  | 0.5727  | +0.0007  <-- headline
+  genes-miss(P) [image-only, control]  | 0.6127  | 0.6131  | -0.0004
+  image-miss(G) [gene-only, control]   | 0.5240  | 0.5240  | -0.0000

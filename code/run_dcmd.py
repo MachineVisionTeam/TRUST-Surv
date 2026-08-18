@@ -35,12 +35,12 @@ def _t(a, device):
     return torch.from_numpy(np.asarray(a, dtype=np.float32)).to(device)
 
 
-def train_one_fold(tr, device, epochs, seed, la, ld, bidir=True):
+def train_one_fold(tr, device, epochs, seed, la, ld, bidir=True, absent="learned"):
     sc_i, sc_g = StandardScaler(), StandardScaler()
     Xi = sc_i.fit_transform(tr["X_img"]).astype(np.float32)
     Xg = sc_g.fit_transform(tr["X_gene"]).astype(np.float32)
     torch.manual_seed(seed); np.random.seed(seed)
-    model = DCMDSurv().to(device)
+    model = DCMDSurv(absent=absent).to(device)
     cfg = model.cfg
     opt = torch.optim.Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
 
@@ -93,11 +93,11 @@ def eval_three(model, va, sc_i, sc_g, device):
             "image_missing": cindex_lifelines(h_G.cpu().numpy(), va["e"], va["t"])}
 
 
-def run_config(cfg_name, gd, device, epochs, folds, la, ld, bidir=True, seed=0):
+def run_config(cfg_name, gd, device, epochs, folds, la, ld, bidir=True, seed=0, absent="learned"):
     acc = {k: [] for k in ["both", "genes_missing", "image_missing"]}
     for fold in range(folds):
         data = load_fold_config(fold, cfg_name, gd)
-        model, sc_i, sc_g = train_one_fold(data["train"], device, epochs, seed + fold, la, ld, bidir)
+        model, sc_i, sc_g = train_one_fold(data["train"], device, epochs, seed + fold, la, ld, bidir, absent)
         sc = eval_three(model, data["val"], sc_i, sc_g, device)
         for k in acc:
             acc[k].append(sc[k])

@@ -46,7 +46,8 @@ def _proj(d):
 
 
 class DCMDSurv(nn.Module):
-    def __init__(self, img_dim=1536, gene_dim=256, cfg: GenoDistilConfig | None = None):
+    def __init__(self, img_dim=1536, gene_dim=256, cfg: GenoDistilConfig | None = None,
+                 absent: str = "learned"):
         super().__init__()
         self.backbone = GenoDistilCPKF(img_dim=img_dim, gene_dim=gene_dim, cfg=cfg)
         d = self.backbone.cfg.fusion_dim
@@ -57,9 +58,18 @@ class DCMDSurv(nn.Module):
         # heads
         self.head_I = _mlp_head(d)   # image, gene-anchored (reads G_img)
         self.head_G = _mlp_head(d)   # gene teacher + image-missing fallback (reads G_gene)
-        # absent tokens (imputation-free)
-        self.absent_image = nn.Parameter(torch.randn(d) * 0.1)
-        self.absent_gene = nn.Parameter(torch.randn(d) * 0.1)
+        # absent tokens (imputation-free). absent="learned" (default) = trainable
+        # vectors; absent="zero" = fixed zero fill (ablation: zero-imputation in
+        # latent space instead of a learned "this is missing" signal).
+        self.absent_mode = absent
+        if absent == "learned":
+            self.absent_image = nn.Parameter(torch.randn(d) * 0.1)
+            self.absent_gene = nn.Parameter(torch.randn(d) * 0.1)
+        elif absent == "zero":
+            self.register_buffer("absent_image", torch.zeros(d))
+            self.register_buffer("absent_gene", torch.zeros(d))
+        else:
+            raise ValueError(f"absent must be 'learned' or 'zero', got {absent!r}")
 
     @property
     def cfg(self):
