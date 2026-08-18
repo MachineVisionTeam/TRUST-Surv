@@ -1,0 +1,24 @@
+
+==================================================================================
+BRCA — CONFORMAL RELIABILITY (0% missing, 5-fold)
+  naive = raw model's own uncertainty   conformal = guaranteed LPB (IPCW split-conformal)
+  Guarantee is one-sided: coverage >= target (over-coverage valid; under-coverage fails).
+==================================================================================
+
+--- target coverage 0.80 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.854   |     0.949     |      24.62   | yes          | yes
+  genes-miss (P)  |   0.816   |     0.933     |      23.16   | yes          | yes
+  image-miss (G)  |   0.763   |     0.944     |      37.69   | NO (overconf)| yes
+
+--- target coverage 0.90 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.946   |     0.968     |      28.67   | yes          | yes
+  genes-miss (P)  |   0.932   |     0.996     |      29.64   | yes          | yes
+  image-miss (G)  |   0.937   |     0.985     |      31.46   | yes          | yes
+
+--- target coverage 0.95 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.937   |     0.989     |      20.84   | yes          | yes
+  genes-miss (P)  |   0.959   |     1.008     |      21.92   | yes          | yes
+  image-miss (G)  |   0.968   |     1.012     |      26.63   | yes          | yes

@@ -1,0 +1,24 @@
+
+==================================================================================
+KIRC — CONFORMAL RELIABILITY (0% missing, 5-fold)
+  naive = raw model's own uncertainty   conformal = guaranteed LPB (IPCW split-conformal)
+  Guarantee is one-sided: coverage >= target (over-coverage valid; under-coverage fails).
+==================================================================================
+
+--- target coverage 0.80 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.767   |     0.844     |       9.65   | NO (overconf)| yes
+  genes-miss (P)  |   0.763   |     0.784     |      12.32   | NO (overconf)| yes
+  image-miss (G)  |   0.778   |     0.815     |      12.48   | NO (overconf)| yes
+
+--- target coverage 0.90 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.899   |     0.958     |       8.36   | yes          | yes
+  genes-miss (P)  |   0.805   |     0.907     |      11.91   | NO (overconf)| yes
+  image-miss (G)  |   0.857   |     0.894     |      20.63   | NO (overconf)| yes
+
+--- target coverage 0.95 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.950   |     0.972     |       3.37   | yes          | yes
+  genes-miss (P)  |   0.930   |     0.955     |       5.03   | NO (overconf)| yes
+  image-miss (G)  |   0.885   |     0.913     |       8.06   | NO (overconf)| NO

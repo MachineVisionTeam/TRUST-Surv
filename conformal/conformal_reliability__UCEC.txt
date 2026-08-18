@@ -1,0 +1,24 @@
+
+==================================================================================
+UCEC — CONFORMAL RELIABILITY (0% missing, 5-fold)
+  naive = raw model's own uncertainty   conformal = guaranteed LPB (IPCW split-conformal)
+  Guarantee is one-sided: coverage >= target (over-coverage valid; under-coverage fails).
+==================================================================================
+
+--- target coverage 0.80 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.743   |     1.097     |      40.71   | NO (overconf)| yes
+  genes-miss (P)  |   0.743   |     1.058     |      71.91   | NO (overconf)| yes
+  image-miss (G)  |   0.540   |     1.037     |      71.76   | NO (overconf)| yes
+
+--- target coverage 0.90 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.880   |     0.997     |      15.54   | yes          | yes
+  genes-miss (P)  |   0.927   |     0.968     |      30.27   | yes          | yes
+  image-miss (G)  |   0.803   |     0.985     |      51.21   | NO (overconf)| yes
+
+--- target coverage 0.95 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.972   |     0.960     |       4.19   | yes          | yes
+  genes-miss (P)  |   0.975   |     0.973     |      12.05   | yes          | yes
+  image-miss (G)  |   0.882   |     0.985     |      14.92   | NO (overconf)| yes

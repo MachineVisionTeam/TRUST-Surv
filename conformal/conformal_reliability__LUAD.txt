@@ -1,0 +1,24 @@
+
+==================================================================================
+LUAD — CONFORMAL RELIABILITY (0% missing, 5-fold)
+  naive = raw model's own uncertainty   conformal = guaranteed LPB (IPCW split-conformal)
+  Guarantee is one-sided: coverage >= target (over-coverage valid; under-coverage fails).
+==================================================================================
+
+--- target coverage 0.80 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.723   |     0.866     |       7.67   | NO (overconf)| yes
+  genes-miss (P)  |   0.713   |     0.808     |       6.56   | NO (overconf)| yes
+  image-miss (G)  |   0.712   |     0.842     |       9.40   | NO (overconf)| yes
+
+--- target coverage 0.90 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.896   |     0.964     |       5.15   | yes          | yes
+  genes-miss (P)  |   0.858   |     0.931     |       7.82   | NO (overconf)| yes
+  image-miss (G)  |   0.859   |     0.954     |       9.47   | NO (overconf)| yes
+
+--- target coverage 0.95 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.931   |     0.970     |       2.59   | yes          | yes
+  genes-miss (P)  |   0.932   |     0.960     |       2.83   | yes          | yes
+  image-miss (G)  |   0.950   |     0.961     |       4.48   | yes          | yes

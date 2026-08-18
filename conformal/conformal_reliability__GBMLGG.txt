@@ -1,0 +1,24 @@
+
+==================================================================================
+GBMLGG — CONFORMAL RELIABILITY (0% missing, 5-fold)
+  naive = raw model's own uncertainty   conformal = guaranteed LPB (IPCW split-conformal)
+  Guarantee is one-sided: coverage >= target (over-coverage valid; under-coverage fails).
+==================================================================================
+
+--- target coverage 0.80 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.678   |     0.727     |     579.60   | NO (overconf)| NO
+  genes-miss (P)  |   0.702   |     0.713     |      56.20   | NO (overconf)| NO
+  image-miss (G)  |   0.601   |     0.856     |     697.80   | NO (overconf)| yes
+
+--- target coverage 0.90 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.786   |     0.912     |     375.00   | NO (overconf)| yes
+  genes-miss (P)  |   0.858   |     0.873     |      67.20   | NO (overconf)| NO
+  image-miss (G)  |   0.851   |     0.928     |     375.00   | NO (overconf)| yes
+
+--- target coverage 0.95 ---
+  scenario        | naive cov | conformal cov | median width | naive holds? | conf holds?
+  complete (C)    |   0.867   |     0.927     |     445.20   | NO (overconf)| NO
+  genes-miss (P)  |   0.950   |     0.952     |     285.80   | yes          | yes
+  image-miss (G)  |   0.998   |     0.984     |     404.40   | yes          | yes

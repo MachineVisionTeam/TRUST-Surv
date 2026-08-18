@@ -195,6 +195,20 @@ So: **DCMD wins the majority of missing-modality cells (15/20)**, dominant on KI
 
 ---
 
+## Reliability — Distribution-Free Coverage Guarantee (Conformal)
+
+Beyond point predictions, we wrap each risk score in a **conformal lower predictive bound** on survival time — a bound with a **distribution-free coverage guarantee** `P(T ≥ L(x)) ≥ 1−α`, using IPCW split-conformal (Candès–Lei–Ramdas, 2023). It is **post-hoc** (no retraining) and model-agnostic.
+
+**Finding.** When a modality is missing, the raw model's own uncertainty becomes **overconfident** — its 90% predictions actually cover only ~80–86% (below target) on **4 of 5 cohorts**. The conformal layer **restores valid ≥90% coverage in 14 of 15 cells**, and the guarantee holds across **80% / 90% / 95%** target levels.
+
+![Conformal reliability](conformal/fig_conformal_reliability.png)
+
+*Left:* at the 90% target, the raw model (naive, grey) dips below the line in the missing-modality scenarios; conformal (blue) restores ≥90%. *Right:* across target levels, the naive curve sits in the overconfident region while conformal stays on/above the ideal. Per-cohort tables: [`conformal/`](conformal/).
+
+> Honest caveats: on **BRCA** the raw model is already well-calibrated (no overconfidence to fix); on GBMLGG genes-miss conformal lands at 0.873 (marginal). Some cells show conservative over-coverage. All stated openly.
+
+---
+
 ## 📁 Folder Structure
 
 ```
@@ -230,10 +244,16 @@ DCMD-Surv/
 ├── UCEC/
 │   ├── results/            # comparison_UCEC.txt (comparison-only)
 │   └── figures/            # fig_comparison / fig_km_stratification / fig_calibration
-└── BRCA/
-    ├── results/            # comparison_BRCA.txt (comparison-only)
-    └── figures/            # (same layout)
+├── BRCA/
+│   ├── results/            # comparison_BRCA.txt (comparison-only)
+│   └── figures/            # (same layout)
+└── conformal/              # conformal reliability star (post-hoc coverage guarantee)
+    ├── conformal_reliability__<COHORT>.txt   # naive vs conformal coverage, 80/90/95%
+    ├── conformal_summary.csv                 # machine-readable summary
+    └── fig_conformal_reliability.png         # coverage figure
 ```
+
+*(Conformal code: `code/conformal_survival.py`, `code/run_conformal.py`, `code/make_conformal_figure.py`.)*
 
 ---
 
