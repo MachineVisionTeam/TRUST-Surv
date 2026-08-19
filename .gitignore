@@ -3,3 +3,6 @@ __pycache__/
 *.pyo
 .DS_Store
 .ipynb_checkpoints/
+
+# Local-only manuscript drafts & notes — never push to GitHub
+manuscript_info/
