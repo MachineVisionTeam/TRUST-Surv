@@ -1,5 +1,5 @@
 ========================================================================
-DCMD-Surv REAL-MISSING experiment — KIRC 5-fold (test set unchanged)
+TRUST-Surv REAL-MISSING experiment — KIRC 5-fold (test set unchanged)
 training augmented with 92 gene-only + 2 image-only real cases
 ========================================================================
 

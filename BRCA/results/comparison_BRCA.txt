@@ -1,11 +1,11 @@
 ====================================================================================
-BRCA — DCMD-Surv vs ALL baselines. C-index / IBS  (higher C / lower IBS = better).
+BRCA — TRUST-Surv vs ALL baselines. C-index / IBS  (higher C / lower IBS = better).
 Scenarios: P=genes-missing(image-only)  G=image-missing(gene-only)  C=complete.  * = ours.
 ====================================================================================
 
 --- 0% MISSING ---
   METHOD       | P (C/IBS)     | G (C/IBS)     | C (C/IBS)    
-  DCMD-Surv*   | 0.622/0.102 | 0.542/0.103 | 0.612/0.103
+  TRUST-Surv*   | 0.622/0.102 | 0.542/0.103 | 0.612/0.103
   zero-fill    | 0.596/0.135 | 0.457/0.118 | 0.581/0.138
   mean-imp     | 0.594/0.134 | 0.487/0.119 | 0.581/0.138
   KNN-imp      | 0.608/0.132 | 0.518/0.136 | 0.581/0.138
@@ -16,7 +16,7 @@ Scenarios: P=genes-missing(image-only)  G=image-missing(gene-only)  C=complete. 
 
 --- 60% MISSING ---
   METHOD       | P (C/IBS)     | G (C/IBS)     | C (C/IBS)    
-  DCMD-Surv*   | 0.624/0.102 | 0.510/0.104 | 0.619/0.103
+  TRUST-Surv*   | 0.624/0.102 | 0.510/0.104 | 0.619/0.103
   zero-fill    | 0.592/0.125 | 0.526/0.114 | 0.576/0.128
   mean-imp     | 0.594/0.126 | 0.503/0.121 | 0.576/0.131
   KNN-imp      | 0.580/0.132 | 0.519/0.128 | 0.557/0.135
@@ -27,7 +27,7 @@ Scenarios: P=genes-missing(image-only)  G=image-missing(gene-only)  C=complete. 
 
 MOTCat (complete-data reference, 0% only): C=0.578 / IBS=0.110
 
---- REAL-MISSING (DCMD trained + genuinely single-modality patients; test unchanged) ---
+--- REAL-MISSING (TRUST-Surv trained + genuinely single-modality patients; test unchanged) ---
   TABLE 1 (0% simulated)   (C-index / IBS)   paired-only  ->  +real-missing
   genes-miss(P)  C 0.6209->0.6184 (-0.0025) | IBS 0.1020->0.1023 (+0.0002)
   image-miss(G)  C 0.5236->0.5252 (+0.0016) | IBS 0.1078->0.1083 (+0.0005)

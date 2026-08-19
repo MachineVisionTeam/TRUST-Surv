@@ -1,5 +1,5 @@
 """
-Build DCMD-Surv/COMPARISON.txt — the repo-level, EMMS-style overall picture across
+Build TRUST-Surv/COMPARISON.txt — the repo-level, EMMS-style overall picture across
 ALL cohorts. Generated from make_tables.py (single source of truth) + the raw
 real-missing result files, so it can never drift from the per-cohort tables.
 
@@ -11,15 +11,15 @@ import re
 import make_tables as MT
 
 MM = "/home/sbarua/Region_based_segmentation/missing_modality"
-OUT = f"{MM}/DCMD-Surv/COMPARISON.txt"
+OUT = f"{MM}/DCMD-Surv/COMPARISON.txt"   # repo folder still named DCMD-Surv on disk (rename on GitHub separately)
 RES = f"{MM}/results"
 
 HEADER = """\
 ################################################################################
-# DCMD-Surv — OVERALL COMPARISON vs all baseline papers, per cohort (EMMS-style)
+# TRUST-Surv — OVERALL COMPARISON vs all baseline papers, per cohort (EMMS-style)
 # Scenarios: P=genes-missing(image-only), G=image-missing(gene-only), C=complete
 # Metrics: C-index (higher=better discrimination) / IBS (lower=better calibration)
-# Feature-matched: UNI2h (image) + BulkRNABert (gene), pooled. DCMD-Surv* = ours.
+# Feature-matched: UNI2h (image) + BulkRNABert (gene), pooled. TRUST-Surv* = ours.
 # Baselines: naive(zero/mean/KNN) + Flex-MoE(NeurIPS24) + MUSE(ICLR24) +
 #            MOTCat(ICCV23, complete-ref) + HEALNet(NeurIPS24) + ShaSpec(CVPR23).
 # Protocol: 5-fold CV; 0% and 60% missing (60% = mean over 5 blank-configs).
@@ -31,7 +31,7 @@ HEADER = """\
 def real_missing_section():
     """Summarise the real-missing augmentation experiment across cohorts."""
     lines = ["\n" + "=" * 78,
-             "SUPPLEMENTARY — REAL-MISSING AUGMENTATION (DCMD-Surv only)",
+             "SUPPLEMENTARY — REAL-MISSING AUGMENTATION (TRUST-Surv only)",
              "Train additionally on genuinely single-modality patients that the paired-only",
              "protocol (and DisPro/EMMS) discard. Test set UNCHANGED, so directly comparable.",
              "=" * 78]
@@ -64,7 +64,7 @@ def real_missing_section():
               "  * Cohort split: KIRC/LUAD/BRCA are near-neutral-to-positive; GBMLGG improves",
               "    calibration; UCEC DEGRADES the image-miss C-index (-0.030) — so the net",
               "    effect across all five cohorts is inconsistent.",
-              "  * Conclusion: real-missing data is usable by DCMD-Surv without imputation, but",
+              "  * Conclusion: real-missing data is usable by TRUST-Surv without imputation, but",
               "    it is NOT a reliable discrimination or calibration boost across cohorts.",
               "    Reported as a supplementary finding, NOT as a headline claim."]
     return "\n".join(lines)

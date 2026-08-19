@@ -1,5 +1,5 @@
 ========================================================================
-DCMD-Surv REAL-MISSING experiment — GBMLGG 5-fold (test set unchanged)
+TRUST-Surv REAL-MISSING experiment — GBMLGG 5-fold (test set unchanged)
 training augmented with 79 gene-only + 177 image-only real cases
 ========================================================================
 

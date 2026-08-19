@@ -1,6 +1,6 @@
 """
 Headline comparison figure per cohort: C-index (higher=better) + IBS (lower=better)
-across ALL methods, for the 3 missing scenarios (P/G/C), 0% missing. DCMD highlighted.
+across ALL methods, for the 3 missing scenarios (P/G/C), 0% missing. TRUST highlighted.
 Cohort-aware -> reuse for future cohorts by adding to NUMBERS.
 
 Usage: python3 make_comparison_bars.py            # all cohorts in NUMBERS
@@ -24,7 +24,7 @@ NUMBERS = {
         "MOTCat":   {"P": None,           "G": None,           "C": (0.724, 0.141)},
         "HEALNet":  {"P": (0.675, 0.160), "G": (0.657, 0.162), "C": (0.701, 0.143)},
         "ShaSpec":  {"P": (0.692, 0.167), "G": (0.683, 0.150), "C": (0.735, 0.166)},
-        "DCMD":     {"P": (0.751, 0.121), "G": (0.705, 0.135), "C": (0.764, 0.128)},
+        "TRUST":     {"P": (0.751, 0.121), "G": (0.705, 0.135), "C": (0.764, 0.128)},
     },
     "GBMLGG": {
         "zero":     {"P": (0.742, 0.160), "G": (0.804, 0.131), "C": (0.810, 0.144)},
@@ -35,7 +35,7 @@ NUMBERS = {
         "MOTCat":   {"P": None,           "G": None,           "C": (0.809, 0.133)},
         "HEALNet":  {"P": (0.775, 0.162), "G": (0.798, 0.186), "C": (0.811, 0.151)},
         "ShaSpec":  {"P": (0.740, 0.182), "G": (0.796, 0.143), "C": (0.797, 0.159)},
-        "DCMD":     {"P": (0.817, 0.117), "G": (0.823, 0.117), "C": (0.823, 0.129)},
+        "TRUST":     {"P": (0.817, 0.117), "G": (0.823, 0.117), "C": (0.823, 0.129)},
     },
     "LUAD": {
         "zero":     {"P": (0.552, 0.224), "G": (0.547, 0.207), "C": (0.566, 0.229)},
@@ -46,7 +46,7 @@ NUMBERS = {
         "MOTCat":   {"P": None,           "G": None,           "C": (0.559, 0.169)},
         "HEALNet":  {"P": (0.568, 0.203), "G": (0.517, 0.191), "C": (0.553, 0.194)},
         "ShaSpec":  {"P": (0.561, 0.234), "G": (0.581, 0.215), "C": (0.581, 0.237)},
-        "DCMD":     {"P": (0.574, 0.164), "G": (0.560, 0.170), "C": (0.591, 0.161)},
+        "TRUST":     {"P": (0.574, 0.164), "G": (0.560, 0.170), "C": (0.591, 0.161)},
     },
     "UCEC": {
         "zero":     {"P": (0.629, 0.104), "G": (0.604, 0.091), "C": (0.698, 0.084)},
@@ -57,7 +57,7 @@ NUMBERS = {
         "MOTCat":   {"P": None,           "G": None,           "C": (0.674, 0.090)},
         "HEALNet":  {"P": (0.660, 0.080), "G": (0.657, 0.085), "C": (0.684, 0.084)},
         "ShaSpec":  {"P": (0.657, 0.096), "G": (0.654, 0.099), "C": (0.680, 0.087)},
-        "DCMD":     {"P": (0.669, 0.087), "G": (0.672, 0.088), "C": (0.702, 0.082)},
+        "TRUST":     {"P": (0.669, 0.087), "G": (0.672, 0.088), "C": (0.702, 0.082)},
     },
     "BRCA": {
         "zero":     {"P": (0.596, 0.135), "G": (0.457, 0.118), "C": (0.581, 0.138)},
@@ -68,10 +68,10 @@ NUMBERS = {
         "MOTCat":   {"P": None,           "G": None,           "C": (0.578, 0.110)},
         "HEALNet":  {"P": (0.592, 0.117), "G": (0.508, 0.114), "C": (0.570, 0.110)},
         "ShaSpec":  {"P": (0.589, 0.140), "G": (0.491, 0.133), "C": (0.577, 0.143)},
-        "DCMD":     {"P": (0.622, 0.102), "G": (0.542, 0.103), "C": (0.612, 0.103)},
+        "TRUST":     {"P": (0.622, 0.102), "G": (0.542, 0.103), "C": (0.612, 0.103)},
     },
 }
-ORDER = ["zero", "mean", "KNN", "Flex-MoE", "MUSE", "MOTCat", "HEALNet", "ShaSpec", "DCMD"]
+ORDER = ["zero", "mean", "KNN", "Flex-MoE", "MUSE", "MOTCat", "HEALNet", "ShaSpec", "TRUST"]
 SCEN = [("P", "Genes missing (image-only)"), ("G", "Image missing (gene-only)"), ("C", "Complete")]
 BASE_C, OURS_C = "#9aa7b5", "#2f6db0"
 
@@ -88,12 +88,12 @@ def make_cohort(cohort):
                 if cell is None:
                     continue
                 names.append(m); vals.append(cell[mi])
-                colors.append(OURS_C if m == "DCMD" else BASE_C)
+                colors.append(OURS_C if m == "TRUST" else BASE_C)
             x = np.arange(len(names))
             bars = ax.bar(x, vals, color=colors, edgecolor="white", linewidth=0.5)
-            # annotate DCMD value
+            # annotate TRUST value
             for b, m, v in zip(bars, names, vals):
-                if m == "DCMD":
+                if m == "TRUST":
                     ax.text(b.get_x() + b.get_width() / 2, v, f"{v:.3f}", ha="center",
                             va="bottom" if better == "higher" else "top", fontsize=8, fontweight="bold", color=OURS_C)
             ax.set_xticks(x); ax.set_xticklabels(names, rotation=45, ha="right", fontsize=8)

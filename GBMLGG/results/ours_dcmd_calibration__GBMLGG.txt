@@ -1,5 +1,5 @@
 ========================================================================
-DCMD-Surv + CALIBRATION — GBMLGG 5-fold
+TRUST-Surv + CALIBRATION — GBMLGG 5-fold
 C-index (higher=better) | IBS, calMAD (lower=better calibrated)
 ========================================================================
 

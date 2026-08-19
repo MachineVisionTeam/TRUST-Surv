@@ -1,5 +1,5 @@
 ========================================================================
-DCMD-Surv + CALIBRATION — LUAD 5-fold
+TRUST-Surv + CALIBRATION — LUAD 5-fold
 C-index (higher=better) | IBS, calMAD (lower=better calibrated)
 ========================================================================
 

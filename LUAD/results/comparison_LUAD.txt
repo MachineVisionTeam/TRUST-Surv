@@ -1,6 +1,6 @@
 ==============================================================================
-LUAD — DCMD-Surv vs baselines. C-index/IBS (higher C / lower IBS = better).
-Feature-matched (UNI2h + BulkRNABert pooled). DCMD-Surv* = ours. MOTCat=complete-only ref.
+LUAD — TRUST-Surv vs baselines. C-index/IBS (higher C / lower IBS = better).
+Feature-matched (UNI2h + BulkRNABert pooled). TRUST-Surv* = ours. MOTCat=complete-only ref.
 ==============================================================================
 
 --- 0% MISSING ---
@@ -13,7 +13,7 @@ Feature-matched (UNI2h + BulkRNABert pooled). DCMD-Surv* = ours. MOTCat=complete
   MOTCat        |    -   /  -   |    -   /  -   | 0.559/0.169
   HEALNet       | 0.568/0.203 | 0.517/0.191 | 0.553/0.194
   ShaSpec       | 0.561/0.234 | 0.581/0.215 | 0.581/0.237
-  DCMD-Surv*    | 0.574/0.164 | 0.560/0.170 | 0.591/0.161
+  TRUST-Surv*    | 0.574/0.164 | 0.560/0.170 | 0.591/0.161
 
 --- 60% MISSING ---
   METHOD        | P (C/IBS)     | G (C/IBS)     | C (C/IBS)    
@@ -24,4 +24,4 @@ Feature-matched (UNI2h + BulkRNABert pooled). DCMD-Surv* = ours. MOTCat=complete
   MUSE          | 0.548/0.223 | 0.525/0.219 | 0.554/0.215
   HEALNet       | 0.555/0.201 | 0.544/0.186 | 0.553/0.193
   ShaSpec       | 0.553/0.223 | 0.548/0.227 | 0.566/0.217
-  DCMD-Surv*    | 0.558/0.165 | 0.560/0.170 | 0.571/0.161
+  TRUST-Surv*    | 0.558/0.165 | 0.560/0.170 | 0.571/0.161

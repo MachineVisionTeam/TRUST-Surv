@@ -1,5 +1,5 @@
 ========================================================================
-DCMD-Surv REAL-MISSING experiment — LUAD 5-fold (test set unchanged)
+TRUST-Surv REAL-MISSING experiment — LUAD 5-fold (test set unchanged)
 training augmented with 51 gene-only + 3 image-only real cases
 ========================================================================
 

@@ -2,7 +2,7 @@
 Generate clean combined comparison tables (current baseline set, no DisPro):
   results/comparison_<COHORT>.txt   (per cohort, all methods, 0% + 60%)
   results/MASTER_comparison.txt      (both cohorts side by side, complete scenario)
-DCMD marked with *. Numbers hardcoded (single source of truth) -> add cohorts here.
+TRUST-Surv marked with *. Numbers hardcoded (single source of truth) -> add cohorts here.
 """
 import os
 
@@ -19,7 +19,7 @@ NUM = {
             "MOTCat":     {"P": None,           "G": None,           "C": (0.724, 0.141)},
             "HEALNet":    {"P": (0.675, 0.160), "G": (0.657, 0.162), "C": (0.701, 0.143)},
             "ShaSpec":    {"P": (0.692, 0.167), "G": (0.683, 0.150), "C": (0.735, 0.166)},
-            "DCMD-Surv*": {"P": (0.751, 0.121), "G": (0.705, 0.135), "C": (0.764, 0.128)},
+            "TRUST-Surv*": {"P": (0.751, 0.121), "G": (0.705, 0.135), "C": (0.764, 0.128)},
         },
         "60%": {
             "zero-fill":  {"P": (0.709, 0.148), "G": (0.663, 0.141), "C": (0.734, 0.145)},
@@ -29,7 +29,7 @@ NUM = {
             "MUSE":       {"P": (0.684, 0.159), "G": (0.646, 0.168), "C": (0.713, 0.149)},
             "HEALNet":    {"P": (0.668, 0.158), "G": (0.657, 0.155), "C": (0.705, 0.148)},
             "ShaSpec":    {"P": (0.689, 0.167), "G": (0.620, 0.173), "C": (0.710, 0.158)},
-            "DCMD-Surv*": {"P": (0.738, 0.122), "G": (0.706, 0.135), "C": (0.759, 0.132)},
+            "TRUST-Surv*": {"P": (0.738, 0.122), "G": (0.706, 0.135), "C": (0.759, 0.132)},
         },
     },
     "GBMLGG": {
@@ -42,7 +42,7 @@ NUM = {
             "MOTCat":     {"P": None,           "G": None,           "C": (0.809, 0.133)},
             "HEALNet":    {"P": (0.775, 0.162), "G": (0.798, 0.186), "C": (0.811, 0.151)},
             "ShaSpec":    {"P": (0.740, 0.182), "G": (0.796, 0.143), "C": (0.797, 0.159)},
-            "DCMD-Surv*": {"P": (0.817, 0.117), "G": (0.823, 0.117), "C": (0.823, 0.129)},
+            "TRUST-Surv*": {"P": (0.817, 0.117), "G": (0.823, 0.117), "C": (0.823, 0.129)},
         },
         "60%": {
             "zero-fill":  {"P": (0.791, 0.140), "G": (0.809, 0.130), "C": (0.816, 0.131)},
@@ -52,7 +52,7 @@ NUM = {
             "MUSE":       {"P": (0.787, 0.155), "G": (0.792, 0.147), "C": (0.814, 0.132)},
             "HEALNet":    {"P": (0.781, 0.162), "G": (0.789, 0.161), "C": (0.816, 0.147)},
             "ShaSpec":    {"P": (0.774, 0.164), "G": (0.788, 0.155), "C": (0.803, 0.148)},
-            "DCMD-Surv*": {"P": (0.814, 0.118), "G": (0.823, 0.117), "C": (0.817, 0.133)},
+            "TRUST-Surv*": {"P": (0.814, 0.118), "G": (0.823, 0.117), "C": (0.817, 0.133)},
         },
     },
     "LUAD": {
@@ -65,7 +65,7 @@ NUM = {
             "MOTCat":     {"P": None,           "G": None,           "C": (0.559, 0.169)},
             "HEALNet":    {"P": (0.568, 0.203), "G": (0.517, 0.191), "C": (0.553, 0.194)},
             "ShaSpec":    {"P": (0.561, 0.234), "G": (0.581, 0.215), "C": (0.581, 0.237)},
-            "DCMD-Surv*": {"P": (0.574, 0.164), "G": (0.560, 0.170), "C": (0.591, 0.161)},
+            "TRUST-Surv*": {"P": (0.574, 0.164), "G": (0.560, 0.170), "C": (0.591, 0.161)},
         },
         "60%": {
             "zero-fill":  {"P": (0.554, 0.215), "G": (0.542, 0.187), "C": (0.567, 0.208)},
@@ -75,7 +75,7 @@ NUM = {
             "MUSE":       {"P": (0.548, 0.223), "G": (0.525, 0.219), "C": (0.554, 0.215)},
             "HEALNet":    {"P": (0.555, 0.201), "G": (0.544, 0.186), "C": (0.553, 0.193)},
             "ShaSpec":    {"P": (0.553, 0.223), "G": (0.548, 0.227), "C": (0.566, 0.217)},
-            "DCMD-Surv*": {"P": (0.558, 0.165), "G": (0.560, 0.170), "C": (0.571, 0.161)},
+            "TRUST-Surv*": {"P": (0.558, 0.165), "G": (0.560, 0.170), "C": (0.571, 0.161)},
         },
     },
     "UCEC": {
@@ -88,7 +88,7 @@ NUM = {
             "MOTCat":     {"P": None,           "G": None,           "C": (0.674, 0.090)},
             "HEALNet":    {"P": (0.660, 0.080), "G": (0.657, 0.085), "C": (0.684, 0.084)},
             "ShaSpec":    {"P": (0.657, 0.096), "G": (0.654, 0.099), "C": (0.680, 0.087)},
-            "DCMD-Surv*": {"P": (0.669, 0.087), "G": (0.672, 0.088), "C": (0.702, 0.082)},
+            "TRUST-Surv*": {"P": (0.669, 0.087), "G": (0.672, 0.088), "C": (0.702, 0.082)},
         },
         "60%": {
             "zero-fill":  {"P": (0.646, 0.092), "G": (0.621, 0.096), "C": (0.672, 0.093)},
@@ -98,7 +98,7 @@ NUM = {
             "MUSE":       {"P": (0.665, 0.080), "G": (0.595, 0.084), "C": (0.670, 0.080)},
             "HEALNet":    {"P": (0.646, 0.086), "G": (0.614, 0.091), "C": (0.668, 0.084)},
             "ShaSpec":    {"P": (0.650, 0.096), "G": (0.595, 0.105), "C": (0.668, 0.098)},
-            "DCMD-Surv*": {"P": (0.651, 0.081), "G": (0.657, 0.085), "C": (0.679, 0.083)},
+            "TRUST-Surv*": {"P": (0.651, 0.081), "G": (0.657, 0.085), "C": (0.679, 0.083)},
         },
     },
     "BRCA": {
@@ -111,7 +111,7 @@ NUM = {
             "MOTCat":     {"P": None,           "G": None,           "C": (0.578, 0.110)},
             "HEALNet":    {"P": (0.592, 0.117), "G": (0.508, 0.114), "C": (0.570, 0.110)},
             "ShaSpec":    {"P": (0.589, 0.140), "G": (0.491, 0.133), "C": (0.577, 0.143)},
-            "DCMD-Surv*": {"P": (0.622, 0.102), "G": (0.542, 0.103), "C": (0.612, 0.103)},
+            "TRUST-Surv*": {"P": (0.622, 0.102), "G": (0.542, 0.103), "C": (0.612, 0.103)},
         },
         "60%": {
             "zero-fill":  {"P": (0.592, 0.125), "G": (0.526, 0.114), "C": (0.576, 0.128)},
@@ -121,11 +121,11 @@ NUM = {
             "MUSE":       {"P": (0.526, 0.104), "G": (0.542, 0.104), "C": (0.554, 0.104)},
             "HEALNet":    {"P": (0.613, 0.112), "G": (0.524, 0.118), "C": (0.573, 0.114)},
             "ShaSpec":    {"P": (0.598, 0.133), "G": (0.508, 0.139), "C": (0.579, 0.139)},
-            "DCMD-Surv*": {"P": (0.624, 0.102), "G": (0.510, 0.104), "C": (0.619, 0.103)},
+            "TRUST-Surv*": {"P": (0.624, 0.102), "G": (0.510, 0.104), "C": (0.619, 0.103)},
         },
     },
 }
-ORDER = ["zero-fill", "mean-imp", "KNN-imp", "Flex-MoE", "MUSE", "MOTCat", "HEALNet", "ShaSpec", "DCMD-Surv*"]
+ORDER = ["zero-fill", "mean-imp", "KNN-imp", "Flex-MoE", "MUSE", "MOTCat", "HEALNet", "ShaSpec", "TRUST-Surv*"]
 SCEN = [("P", "genes-miss(P)"), ("G", "image-miss(G)"), ("C", "both(C)")]
 
 
@@ -135,8 +135,8 @@ def cell(v):
 
 def cohort_table(cohort):
     lines = ["=" * 78,
-             f"{cohort} — DCMD-Surv vs baselines. C-index/IBS (higher C / lower IBS = better).",
-             "Feature-matched (UNI2h + BulkRNABert pooled). DCMD-Surv* = ours. MOTCat=complete-only ref.",
+             f"{cohort} — TRUST-Surv vs baselines. C-index/IBS (higher C / lower IBS = better).",
+             "Feature-matched (UNI2h + BulkRNABert pooled). TRUST-Surv* = ours. MOTCat=complete-only ref.",
              "=" * 78]
     for setting in ["0%", "60%"]:
         d = NUM[cohort][setting]
@@ -154,7 +154,7 @@ def master_table():
     """All cohorts side by side. Cohort-agnostic -> new cohorts auto-included."""
     cohorts = list(NUM.keys())
     lines = ["=" * (18 + 16 * len(cohorts)),
-             "MASTER COMPARISON — DCMD-Surv vs baselines across cohorts. C-index / IBS.",
+             "MASTER COMPARISON — TRUST-Surv vs baselines across cohorts. C-index / IBS.",
              "=" * (18 + 16 * len(cohorts))]
     for setting in ["0%", "60%"]:
         lines.append(f"\n--- {setting} MISSING · COMPLETE scenario (C) ---")
@@ -171,21 +171,21 @@ def master_table():
             if any_val:
                 lines.append(f"  {m:13s} | " + " | ".join(row))
     lines.append("\nWHAT HOLDS (verified cell-by-cell against every baseline):")
-    lines.append("  * COMPLETE (C) scenario: DCMD-Surv has the HIGHEST C-index on all five")
+    lines.append("  * COMPLETE (C) scenario: TRUST-Surv has the HIGHEST C-index on all five")
     lines.append("    cohorts at BOTH 0% and 60% missing (10/10 cells).")
-    lines.append("  * IBS (calibration): DCMD-Surv is the LOWEST (or tied) in 23 of the 30 cells")
+    lines.append("  * IBS (calibration): TRUST-Surv is the LOWEST (or tied) in 23 of the 30 cells")
     lines.append("    across all cohorts/settings/scenarios. The exception cohort is UCEC, where")
     lines.append("    MUSE is better-calibrated (lower IBS) in all 6 cells.")
-    lines.append("\nEXCEPTIONS (stated explicitly — DCMD is NOT best in these cells):")
+    lines.append("\nEXCEPTIONS (stated explicitly — TRUST-Surv is NOT best in these cells):")
     lines.append("  C-index losses:")
-    lines.append("  - LUAD 0% image-miss(G) : ShaSpec 0.581 > DCMD 0.560")
-    lines.append("  - LUAD 60% genes-miss(P): mean-imp 0.562 > DCMD 0.558")
-    lines.append("  - UCEC 0% genes-miss(P) : KNN 0.675 > DCMD 0.669")
-    lines.append("  - UCEC 60% genes-miss(P): MUSE 0.665 > DCMD 0.651")
-    lines.append("  - BRCA 60% image-miss(G): MUSE 0.542 > DCMD 0.510")
+    lines.append("  - LUAD 0% image-miss(G) : ShaSpec 0.581 > TRUST-Surv 0.560")
+    lines.append("  - LUAD 60% genes-miss(P): mean-imp 0.562 > TRUST-Surv 0.558")
+    lines.append("  - UCEC 0% genes-miss(P) : KNN 0.675 > TRUST-Surv 0.669")
+    lines.append("  - UCEC 60% genes-miss(P): MUSE 0.665 > TRUST-Surv 0.651")
+    lines.append("  - BRCA 60% image-miss(G): MUSE 0.542 > TRUST-Surv 0.510")
     lines.append("  IBS losses:")
-    lines.append("  - GBMLGG 60% complete   : zero-fill 0.131 < DCMD 0.133")
-    lines.append("  - UCEC (all 6 cells)    : MUSE ~0.080-0.084 < DCMD 0.081-0.088")
+    lines.append("  - GBMLGG 60% complete   : zero-fill 0.131 < TRUST-Surv 0.133")
+    lines.append("  - UCEC (all 6 cells)    : MUSE ~0.080-0.084 < TRUST-Surv 0.081-0.088")
     lines.append("  LUAD is the hardest cohort (all methods 0.52-0.59) and BRCA gene-only is")
     lines.append("  near-random for everyone (~0.51-0.54); those single-modality scenarios sit")
     lines.append("  within fold-noise of the imputation baselines. UCEC is well-calibrated for")
