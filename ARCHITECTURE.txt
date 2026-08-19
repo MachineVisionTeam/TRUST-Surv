@@ -1,8 +1,14 @@
 ================================================================================
-DCMD-Surv : Decomposed Cross-Modal Distillation for Imputation-Free
-            Missing-Modality Survival Prediction
+TRUST-Surv : Trustworthy, Reliable Uncertainty via Split-conformal for
+             Time-to-event Survival (imputation-free, missing-modality)
 ================================================================================
-(Paper 2, successor to HyPAL-Surv. Code: code/model_dcmd.py, code/run_dcmd_cal.py)
+(Code: code/model_dcmd.py, code/run_dcmd_cal.py, code/conformal_survival.py)
+
+NOTE ON CONTRIBUTIONS: the contributions are (1) the conformal reliability layer
+(distribution-free coverage guarantee under missing modalities) and (2) the
+calibration finding. The decomposition/distillation and the learned absent token
+described below are lightweight BACKBONE components — infrastructure, not claimed
+as novel contributions. See conformal/ and the README for the reliability results.
 
 --------------------------------------------------------------------------------
 0. ONE-LINE SUMMARY

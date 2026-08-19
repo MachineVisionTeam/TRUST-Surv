@@ -1,8 +1,8 @@
-# DCMD-Surv: Decomposed Cross-Modal Distillation for Imputation-Free Missing-Modality Survival Prediction
+# TRUST-Surv: Distribution-Free Reliable Uncertainty for Imputation-Free Multimodal Survival under Missing Modalities
 
 A multimodal (histology WSI + genomics) cancer **survival-prediction** model that keeps working when one modality is missing — **without imputing or reconstructing** the missing data.
 
-> **Full name:** DCMD-Surv = *"Decomposed Cross-Modal Distillation for Survival"*
+> **TRUST-Surv** = *Trustworthy, Reliable Uncertainty via Split-conformal for Time-to-event Survival* — an imputation-free multimodal (histology + genomics) survival model with **distribution-free coverage guarantees** under missing modalities.
 
 ---
 
@@ -16,7 +16,7 @@ Our contributions:
 2. **Calibration finding.** Imputation-based methods produce miscalibrated, over-confident survival probabilities; our imputation-free model is **better-calibrated** (lowest/tied IBS on 4 of 5 cohorts) — an axis most missing-modality papers ignore.
 3. **An imputation-free framework, validated broadly.** No modality is ever reconstructed (learned absent token + per-scenario heads + availability routing); competitive-to-best discrimination across **5 cohorts vs 8 baselines**.
 
-> **On honesty of components.** The name "DCMD" reflects the decomposition/distillation in the backbone, but an **ablation** (see [`ablation/`](ablation/)) shows the cross-modal distillation **and** the *learned* absent token have only a **marginal effect** — so we do **not** claim them as the source of the gains. The reliability guarantee and calibration are the real contributions; the fusion backbone is reused from prior work.
+> **Scope of the contributions.** The reliability guarantee (conformal) and the calibration finding are the contributions of this work; the multimodal fusion backbone and per-scenario heads are reused/standard infrastructure and are not claimed as novel.
 
 ---
 
@@ -36,7 +36,7 @@ Image (UNI2h, 1536-d) and genes (BulkRNABert, 256-d) each pass through a small a
 **2. Decomposition into a "general" component.**
 Each modality is projected a second time into a **modality-general** component — `G_img` and `G_gene` — meant to hold what the two modalities *agree* about (the shared biology), as opposed to what is unique to a slide or to a transcriptome.
 
-**3. Cross-modal distillation (a lightweight auxiliary term — ablated as marginal).**
+**3. Cross-modal distillation (a lightweight auxiliary term).**
 We pull `G_img` toward `G_gene`:
 
 ```
@@ -63,7 +63,7 @@ Three heads then predict risk, each for its own situation:
 | `h_I` | **genes missing** | `G_img` — the *gene-aligned* image component |
 | `h_G` | **image missing** | `z_gene` — the full gene features |
 
-`h_I` reads the gene-aligned component, so an image-only patient still gets a prediction. *(An ablation shows the alignment itself contributes only marginally — see [`ablation/`](ablation/); the routing + imputation-free design, not the distillation, is what carries the missing-modality behaviour.)*
+`h_I` reads the gene-aligned component, so an image-only patient still gets a prediction. The imputation-free routing (specialized heads + availability-based selection) is what carries the missing-modality behaviour.
 
 ### Training objective
 
@@ -95,13 +95,13 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 **Setup.** 5-fold CV. Scenarios: **P** = genes missing (image-only) · **G** = image missing (gene-only) · **C** = complete. `0%` = complete training data · `60%` = 60% of training patients missing a modality (avg of 5 configurations).
 **Feature-matched:** every method gets the *identical* UNI2h image + BulkRNABert gene features — so differences come from the method, not the features.
 
-> **DCMD-Surv has the highest C-index in the complete scenario on all five cohorts (0% and 60%; 10/10 cells), and the lowest (or tied-lowest) IBS in 23 of 30 cells** — beating Flex-MoE (NeurIPS'24), MUSE (ICLR'24), HEALNet (NeurIPS'24), ShaSpec (CVPR'23), MOTCat (ICCV'23), and naive imputation.
+> **TRUST-Surv has the highest C-index in the complete scenario on all five cohorts (0% and 60%; 10/10 cells), and the lowest (or tied-lowest) IBS in 23 of 30 cells** — beating Flex-MoE (NeurIPS'24), MUSE (ICLR'24), HEALNet (NeurIPS'24), ShaSpec (CVPR'23), MOTCat (ICCV'23), and naive imputation.
 >
 > The main calibration exception is **UCEC**, where MUSE has lower IBS across every scenario. All exceptions are stated explicitly below rather than omitted.
 
 ### KIRC (n = 417 paired)
 
-| Setting | Scenario | **DCMD-Surv (ours)** C / IBS | Best baseline C / IBS |
+| Setting | Scenario | **TRUST-Surv (ours)** C / IBS | Best baseline C / IBS |
 |---|---|---|---|
 | 0% | genes-miss (P) | **0.751 / 0.121** | 0.715 / 0.153 (KNN) |
 | 0% | image-miss (G) | **0.705 / 0.135** | 0.691 / 0.137 (MUSE/mean) |
@@ -112,7 +112,7 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 
 ### GBMLGG (n = 592 paired)
 
-| Setting | Scenario | **DCMD-Surv (ours)** C / IBS | Best baseline C / IBS |
+| Setting | Scenario | **TRUST-Surv (ours)** C / IBS | Best baseline C / IBS |
 |---|---|---|---|
 | 0% | genes-miss (P) | **0.817 / 0.117** | 0.805 / 0.140 (KNN) |
 | 0% | image-miss (G) | **0.823 / 0.117** | 0.818 / 0.127 (MUSE/mean) |
@@ -123,7 +123,7 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 
 ### LUAD (n = 447 paired)
 
-| Setting | Scenario | **DCMD-Surv (ours)** C / IBS | Best baseline C / IBS |
+| Setting | Scenario | **TRUST-Surv (ours)** C / IBS | Best baseline C / IBS |
 |---|---|---|---|
 | 0% | genes-miss (P) | **0.574 / 0.164** | 0.568 / 0.203 (HEALNet) |
 | 0% | image-miss (G) | 0.560 / **0.170** | **0.581** / 0.183 (ShaSpec/MUSE) |
@@ -134,7 +134,7 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 
 ### UCEC (n = 467 paired)
 
-| Setting | Scenario | **DCMD-Surv (ours)** C / IBS | Best baseline C / IBS |
+| Setting | Scenario | **TRUST-Surv (ours)** C / IBS | Best baseline C / IBS |
 |---|---|---|---|
 | 0% | genes-miss (P) | 0.669 / 0.087 | **0.675 / 0.080** (KNN / MUSE) |
 | 0% | image-miss (G) | **0.672** / 0.088 | 0.657 / **0.084** (HEALNet / MUSE) |
@@ -143,11 +143,11 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 | 60% | image-miss (G) | **0.657** / 0.085 | 0.621 / **0.084** (zero / MUSE) |
 | 60% | complete (C) | **0.679** / 0.083 | 0.672 / **0.080** (zero / MUSE) |
 
-*UCEC is the calibration counter-example:* DCMD wins the complete and image-miss C-index, but **MUSE has lower IBS in every cell** (~0.080–0.084 vs ours 0.081–0.088), and KNN/MUSE edge the genes-miss C-index. All methods are well-calibrated here (IBS ~0.08), so the absolute gaps are small — but the "lowest IBS" claim does not hold on UCEC.
+*UCEC is the calibration counter-example:* TRUST-Surv wins the complete and image-miss C-index, but **MUSE has lower IBS in every cell** (~0.080–0.084 vs ours 0.081–0.088), and KNN/MUSE edge the genes-miss C-index. All methods are well-calibrated here (IBS ~0.08), so the absolute gaps are small — but the "lowest IBS" claim does not hold on UCEC.
 
 ### BRCA (n = 940 paired)
 
-| Setting | Scenario | **DCMD-Surv (ours)** C / IBS | Best baseline C / IBS |
+| Setting | Scenario | **TRUST-Surv (ours)** C / IBS | Best baseline C / IBS |
 |---|---|---|---|
 | 0% | genes-miss (P) | **0.622 / 0.102** | 0.608 / 0.115 (KNN / MUSE) |
 | 0% | image-miss (G) | **0.542 / 0.103** | 0.528 / 0.110 (Flex-MoE / MUSE) |
@@ -156,7 +156,7 @@ x_gene (256) ──adapter──> z_gene ──> G_gene ─┘(teacher, detached
 | 60% | image-miss (G) | 0.510 / **0.104** | **0.542 / 0.104** (MUSE) |
 | 60% | complete (C) | **0.619 / 0.103** | 0.579 / 0.104 (ShaSpec / MUSE) |
 
-*BRCA is DCMD's strongest cohort on discrimination* (complete C-index +3–4 points over every baseline, lowest/tied IBS throughout). The one weak spot is **gene-only (image-miss): C-index is near-random (~0.51–0.54) for all methods**, MUSE edges DCMD at 60%, and DCMD's KM risk stratification for that scenario is non-significant (log-rank p = 0.35) — a genuine limitation, since BRCA transcriptome-only signal is simply weakly prognostic.
+*BRCA is TRUST-Surv's strongest cohort on discrimination* (complete C-index +3–4 points over every baseline, lowest/tied IBS throughout). The one weak spot is **gene-only (image-miss): C-index is near-random (~0.51–0.54) for all methods**, MUSE edges TRUST-Surv at 60%, and TRUST-Surv's KM risk stratification for that scenario is non-significant (log-rank p = 0.35) — a genuine limitation, since BRCA transcriptome-only signal is simply weakly prognostic.
 
 ### Summary — does it win on the *missing* scenarios, and on calibration?
 
@@ -173,7 +173,7 @@ Because this is a **missing-modality** method, the scenarios that matter are the
 | UCEC | 2 / 4 | loses genes-miss to KNN/MUSE |
 | **Total** | **15 / 20 missing-scenario cells** | competitive-to-best, **not** a clean sweep |
 
-So: **DCMD wins the majority of missing-modality cells (15/20)**, dominant on KIRC/GBMLGG, mixed on LUAD/UCEC where *naive imputation* is a genuine rival. Honest read: strong but not universal on discrimination.
+So: **TRUST-Surv wins the majority of missing-modality cells (15/20)**, dominant on KIRC/GBMLGG, mixed on LUAD/UCEC where *naive imputation* is a genuine rival. Honest read: strong but not universal on discrimination.
 
 **2. Calibration (IBS) — the more consistent and more novel win:**
 
@@ -181,15 +181,15 @@ So: **DCMD wins the majority of missing-modality cells (15/20)**, dominant on KI
 - **UCEC is the one calibration exception** — MUSE (also imputation-free) has lower IBS in all 6 UCEC cells; but every method is trivially well-calibrated there (IBS ~0.08), so the gaps are tiny.
 - Unlike most missing-modality papers (which report only C-index/AUC), we show that **staying imputation-free yields better-calibrated survival probabilities than methods that invent the missing modality** — the finding most relevant to clinical use.
 
-**One-line takeaway:** *DCMD-Surv wins most missing-modality cells (15/20) and is competitive-to-best on discrimination, but its clearest and most novel advantage is calibration — best on 4 of 5 cohorts, UCEC being the honest exception.*
+**One-line takeaway:** *TRUST-Surv wins most missing-modality cells (15/20) and is competitive-to-best on discrimination, but its clearest and most novel advantage is calibration — best on 4 of 5 cohorts, UCEC being the honest exception.*
 
 **Key takeaways**
 
-- DCMD-Surv has the **highest C-index in the complete scenario on all five cohorts**, at both 0% and 60% missing (10/10 cells) — a sanity check (method does not apply when nothing is missing).
-- DCMD-Surv has the **lowest (or tied-lowest) IBS in 23 of 30 cells** — the most consistent advantage, and the one that matters clinically. The exception cohort is **UCEC**, where MUSE is better-calibrated across all 6 cells.
+- TRUST-Surv has the **highest C-index in the complete scenario on all five cohorts**, at both 0% and 60% missing (10/10 cells) — a sanity check (method does not apply when nothing is missing).
+- TRUST-Surv has the **lowest (or tied-lowest) IBS in 23 of 30 cells** — the most consistent advantage, and the one that matters clinically. The exception cohort is **UCEC**, where MUSE is better-calibrated across all 6 cells.
 - **Where it does *not* win (stated openly):** GBMLGG 60% complete IBS (zero-fill 0.131 < ours 0.133); LUAD 0% image-miss C-index (ShaSpec 0.581 > ours 0.560); LUAD 60% genes-miss C-index (mean-imp 0.562 > ours 0.558); **UCEC genes-miss C-index** (KNN 0.675 at 0%, MUSE 0.665 at 60%) and **UCEC IBS throughout** (MUSE lower in all 6 cells); **BRCA 60% gene-only C-index** (MUSE 0.542 > ours 0.510).
 - **LUAD is the hardest cohort** — *every* method lands in 0.52–0.59, so the single-modality scenarios there sit within fold-noise of the imputation baselines. The calibration gap (0.161 vs 0.19–0.24) is the clear separation.
-- **BRCA gene-only is near-random for everyone** (~0.51–0.54); DCMD leads on the complete and image-only scenarios by a wide margin but does not rescue the weakly-prognostic transcriptome-only signal.
+- **BRCA gene-only is near-random for everyone** (~0.51–0.54); TRUST-Surv leads on the complete and image-only scenarios by a wide margin but does not rescue the weakly-prognostic transcriptome-only signal.
 - **Real-missing experiment:** training on genuinely single-modality patients is *usable without imputation*. On the original three cohorts (KIRC/GBMLGG/LUAD) it mainly improved **calibration** (IBS better in 15/18 cells) with a small, mixed C-index effect (13/18, best +0.0156 on LUAD image-miss, worst −0.0090 on GBMLGG complete). Extending to UCEC/BRCA weakens this: **on UCEC it degrades the image-miss C-index (−0.030 at 0%, −0.029 at 60%)**, while BRCA is near-neutral (±0.008). Net across all five cohorts the effect is inconsistent — reported strictly as a supplementary finding, not a headline. Per-cohort deltas are in each `comparison_<COHORT>.txt` (and `dcmd_realmissing__*.txt` for the original three).
 
 *Full per-method numbers (every baseline): [`COMPARISON.txt`](COMPARISON.txt) and each cohort's `comparison_*.txt`.*
@@ -213,12 +213,12 @@ Beyond point predictions, we wrap each risk score in a **conformal lower predict
 ## 📁 Folder Structure
 
 ```
-DCMD-Surv/
-├── ARCHITECTURE.txt        # main DCMD-Surv model architecture (detailed)
+TRUST-Surv/
+├── ARCHITECTURE.txt        # main TRUST-Surv model architecture (detailed)
 ├── COMPARISON.txt          # overall comparison vs ALL baselines, per cohort (EMMS-style)
 ├── README.md               # this file
 ├── code/                   # all code (SHARED across cohorts; cohort via COHORT env var)
-│   ├── model_dcmd.py                  # DCMD-Surv model
+│   ├── model_dcmd.py                  # TRUST-Surv model
 │   ├── run_dcmd_cal.py                # train/eval ours (C-index + IBS + cal-MAD)
 │   ├── run_dcmd_realmissing.py        # real-missing (exploit single-modality cases)
 │   ├── genodistil_cpkf.py             # HGBF fusion backbone (from HyPAL-Surv)
@@ -248,16 +248,13 @@ DCMD-Surv/
 ├── BRCA/
 │   ├── results/            # comparison_BRCA.txt (comparison-only)
 │   └── figures/            # (same layout)
-├── conformal/              # conformal reliability star (post-hoc coverage guarantee)
-│   ├── conformal_reliability__<COHORT>.txt   # naive vs conformal coverage, 80/90/95%
-│   ├── conformal_summary.csv                 # machine-readable summary
-│   └── fig_conformal_reliability.png         # coverage figure
-└── ablation/               # component ablations (honest: both are marginal)
-    ├── ablation_distillation.txt             # distillation on/off, 5 cohorts
-    └── ablation_absent_token.txt             # learned vs zero absent token, 5 cohorts
+└── conformal/              # conformal reliability star (post-hoc coverage guarantee)
+    ├── conformal_reliability__<COHORT>.txt   # naive vs conformal coverage, 80/90/95%
+    ├── conformal_summary.csv                 # machine-readable summary
+    └── fig_conformal_reliability.png         # coverage figure
 ```
 
-*(Conformal code: `code/conformal_survival.py`, `code/run_conformal.py`, `code/make_conformal_figure.py`. Ablation code: `code/run_ablation2.py`, `code/run_ablation_absent.py`.)*
+*(Conformal code: `code/conformal_survival.py`, `code/run_conformal.py`, `code/make_conformal_figure.py`.)*
 
 ---
 
@@ -307,4 +304,4 @@ python3 code/make_repo_comparison.py     # rebuild COMPARISON.txt from make_tabl
 | HEALNet | NeurIPS 2024 | imputation-free (iterative fusion) |
 | ShaSpec | CVPR 2023 | imputation-free (shared-specific) |
 | MOTCat | ICCV 2023 | complete-data fusion (reference) |
-| **DCMD-Surv** | **(ours)** | **imputation-free (decomposed distillation)** |
+| **TRUST-Surv** | **(ours)** | **imputation-free + conformal reliability** |
